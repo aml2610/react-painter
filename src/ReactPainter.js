@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { canvasToBlob, fileToUrl } from './util';
+import { canvasToBlob, fileToUrl, composeFn } from './util';
 
 const setUpForCanvas = () => {
   document.body.style.touchAction = 'none';
@@ -17,7 +17,7 @@ class ReactPainterContainer extends React.Component {
     render: PropTypes.func.isRequired,
     color: PropTypes.string,
     onSave: PropTypes.func,
-    image: PropTypes.instanceOf(File)
+    image: PropTypes.oneOfType([PropTypes.instanceOf(File), PropTypes.string])
   };
 
   static defaultProps = {
@@ -35,7 +35,9 @@ class ReactPainterContainer extends React.Component {
   scalingFactor = 1;
 
   state = {
-    isDrawing: false
+    isDrawing: false,
+    canvasWidth: 0,
+    canvasHeight: 0
   };
 
   extractOffSetFromEvent = e => {
@@ -66,12 +68,18 @@ class ReactPainterContainer extends React.Component {
       );
       this.canvasRef.width = image.naturalWidth;
       this.canvasRef.height = image.naturalHeight;
-      this.canvasRef.style.width = cvWidth;
-      this.canvasRef.style.height = cvHeight;
+      this.setState({
+        canvasWidth: cvWidth,
+        canvasHeight: cvHeight
+      });
       this.scalingFactor = 1 / scalingRatio;
     } else {
       this.canvasRef.width = width;
       this.canvasRef.height = height;
+      this.setState({
+        canvasWidth: width,
+        canvasHeight: height
+      });
     }
     this.ctx = this.canvasRef.getContext('2d');
     this.ctx.strokeStyle = '#000';
@@ -128,6 +136,36 @@ class ReactPainterContainer extends React.Component {
       .catch(err => console.error('in ReactPainter handleSave', err));
   };
 
+  getCanvasProps = (
+    onMouseDown,
+    onTouchStart,
+    onMouseMove,
+    onTouchMove,
+    onMouseUp,
+    onTouchEnd,
+    style,
+    ref,
+    ...restProps
+  ) => {
+    return {
+      onMouseDown: composeFn(onMouseDown, this.handleMouseDown),
+      onTouchStart: composeFn(onTouchStart, this.handleMouseDown),
+      onMouseMove: composeFn(onMouseMove, this.handleMouseMove),
+      onTouchMove: composeFn(onTouchMove, this.handleMouseMove),
+      onMouseUp: composeFn(onMouseUp, this.handleMouseUp),
+      onTouchEnd: composeFn(onTouchEnd, this.handleMouseUp),
+      ref: composeFn(ref, ref => {
+        this.canvasRef = ref;
+      }),
+      style: {
+        width: this.state.canvasWidth,
+        height: this.state.canvasHeight,
+        ...style
+      },
+      ...restProps
+    };
+  };
+
   componentDidMount() {
     const { width, height, image } = this.props;
     setUpForCanvas();
@@ -137,7 +175,7 @@ class ReactPainterContainer extends React.Component {
         this.initializeCanvas(width, height, img);
         this.ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
       };
-      img.src = fileToUrl(image);
+      img.src = typeof image === 'string' ? image : fileToUrl(image);
     } else {
       this.initializeCanvas(width, height);
     }
@@ -149,21 +187,13 @@ class ReactPainterContainer extends React.Component {
 
   render() {
     const { render } = this.props;
-    const canvasNode = (
-      <canvas
-        onMouseDown={this.handleMouseDown}
-        onTouchStart={this.handleMouseDown}
-        onMouseMove={this.handleMouseMove}
-        onTouchMove={this.handleMouseMove}
-        onMouseUp={this.handleMouseUp}
-        onTouchEnd={this.handleMouseUp}
-        ref={ref => {
-          this.canvasRef = ref;
-        }}
-      />
-    );
+    const canvasNode = <canvas {...this.getCanvasProps()} />;
     return typeof render === 'function'
-      ? render({ canvas: canvasNode, triggerSave: this.handleSave })
+      ? render({
+          canvas: canvasNode,
+          triggerSave: this.handleSave,
+          getCanvasProps: this.getCanvasProps
+        })
       : canvasNode;
   }
 }

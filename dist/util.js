@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.dataUrlToArrayBuffer = dataUrlToArrayBuffer;
 exports.fileToUrl = fileToUrl;
 function dataUrlToArrayBuffer(dataURI) {
-  var byteString = atob(dataURI.split(",")[1]);
+  var byteString = atob(dataURI.split(',')[1]);
   var ia = new Uint8Array(byteString.length);
   for (var i = 0; i < byteString.length; i++) {
     ia[i] = byteString.charCodeAt(i);
@@ -20,7 +20,7 @@ function fileToUrl(file) {
   try {
     return url.createObjectURL(file);
   } catch (e) {
-    return "";
+    return '';
   }
 }
 
@@ -39,4 +39,20 @@ var canvasToBlob = exports.canvasToBlob = function canvasToBlob(canvas, type) {
       resolve(new Blob([buffer], { type: type }));
     }
   });
+};
+
+var composeFn = exports.composeFn = function composeFn() {
+  for (var _len = arguments.length, fns = Array(_len), _key = 0; _key < _len; _key++) {
+    fns[_key] = arguments[_key];
+  }
+
+  return function () {
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    return fns.forEach(function (fn) {
+      return fn && fn.apply(undefined, args);
+    });
+  };
 };

@@ -1,6 +1,6 @@
 {
   "name": "react-painter",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "A react component for drawing in canvas",
   "main": "dist/index.js",
   "scripts": {
@@ -15,11 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/malcolm-kee/react-painter.git"
   },
-  "keywords": [
-    "react",
-    "canvas",
-    "drawing"
-  ],
+  "keywords": ["react", "canvas", "drawing"],
   "author": {
     "name": "Malcolm Kee",
     "email": "malcolm.keeweesiong@gmail.com"

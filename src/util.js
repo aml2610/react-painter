@@ -1,5 +1,5 @@
 export function dataUrlToArrayBuffer(dataURI) {
-  const byteString = atob(dataURI.split(",")[1]);
+  const byteString = atob(dataURI.split(',')[1]);
   const ia = new Uint8Array(byteString.length);
   for (let i = 0; i < byteString.length; i++) {
     ia[i] = byteString.charCodeAt(i);
@@ -13,7 +13,7 @@ export function fileToUrl(file) {
   try {
     return url.createObjectURL(file);
   } catch (e) {
-    return "";
+    return '';
   }
 }
 
@@ -30,3 +30,5 @@ export const canvasToBlob = (canvas, type) =>
       resolve(new Blob([buffer], { type }));
     }
   });
+
+export const composeFn = (...fns) => (...args) => fns.forEach(fn => fn && fn(...args));
