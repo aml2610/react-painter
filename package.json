@@ -1,0 +1,29 @@
+{
+  "name": "react-painter",
+  "version": "0.0.1",
+  "description": "A react component for drawing in canvas",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/malcolm-kee/react-painter.git"
+  },
+  "keywords": ["react", "canvas", "drawing"],
+  "author": {
+    "name": "Malcolm Kee",
+    "email": "malcolm.keeweesiong@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/malcolm-kee/react-painter/issues"
+  },
+  "homepage": "https://github.com/malcolm-kee/react-painter#readme",
+  "peerDependencies": {
+    "react": ">=0.14.x"
+  },
+  "devDependencies": {
+    "react": ">=0.14.x"
+  }
+}
