@@ -9,7 +9,8 @@
     "prebuild": "rimraf dist",
     "test": "jest",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "deploy-storybook": "storybook-to-ghpages"
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,7 @@
     "@storybook/addon-links": "^3.4.0",
     "@storybook/addons": "^3.4.0",
     "@storybook/react": "^3.4.0",
+    "@storybook/storybook-deployer": "^2.3.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
