@@ -1,9 +1,9 @@
-import PropTypes from "prop-types";
-import React from "react";
-import { canvasToBlob, fileToUrl } from "./util";
+import PropTypes from 'prop-types';
+import React from 'react';
+import { canvasToBlob, fileToUrl } from './util';
 
 const setUpForCanvas = () => {
-  document.body.style.touchAction = "none";
+  document.body.style.touchAction = 'none';
 };
 
 const cleanUpCanvas = () => {
@@ -21,7 +21,7 @@ class ReactPainterContainer extends React.Component {
   };
 
   static defaultProps = {
-    color: "#000",
+    color: '#000',
     image: undefined,
     onSave() {
       // noop
@@ -69,25 +69,15 @@ class ReactPainterContainer extends React.Component {
       this.canvasRef.style.width = cvWidth;
       this.canvasRef.style.height = cvHeight;
       this.scalingFactor = 1 / scalingRatio;
-      console.log(
-        "image",
-        image.naturalWidth,
-        image.naturalHeight,
-        "canvas",
-        cvWidth,
-        cvHeight,
-        "ratio",
-        this.scalingFactor
-      );
     } else {
       this.canvasRef.width = width;
       this.canvasRef.height = height;
     }
-    this.ctx = this.canvasRef.getContext("2d");
-    this.ctx.strokeStyle = "#000";
+    this.ctx = this.canvasRef.getContext('2d');
+    this.ctx.strokeStyle = '#000';
     this.ctx.lineWidth = 5 * this.scalingFactor;
-    this.ctx.lineJoin = "round";
-    this.ctx.lineCap = "round";
+    this.ctx.lineJoin = 'round';
+    this.ctx.lineCap = 'round';
   };
 
   getDrawImageCanvasSize = (cWidth, cHeight, imageWidth, imageHeight) => {
@@ -133,9 +123,9 @@ class ReactPainterContainer extends React.Component {
 
   handleSave = () => {
     const { onSave } = this.props;
-    canvasToBlob(this.canvasRef, "image/png")
+    canvasToBlob(this.canvasRef, 'image/png')
       .then(blob => onSave(blob))
-      .catch(err => console.error("in ReactPainter handleSave", err));
+      .catch(err => console.error('in ReactPainter handleSave', err));
   };
 
   componentDidMount() {
@@ -172,8 +162,8 @@ class ReactPainterContainer extends React.Component {
         }}
       />
     );
-    return typeof render === "function"
-      ? render(canvasNode, this.handleSave)
+    return typeof render === 'function'
+      ? render({ canvas: canvasNode, triggerSave: this.handleSave })
       : canvasNode;
   }
 }
