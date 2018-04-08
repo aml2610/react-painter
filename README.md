@@ -1,5 +1,8 @@
 # react-painter
 
+[![version](https://img.shields.io/npm/v/react-painter.svg)](https://www.npmjs.com/package/react-painter)
+![license](https://img.shields.io/npm/l/react-painter.svg)
+
 [DEMO](https://malcolm-kee.github.io/react-painter/)
 
 <p align="center" style="font-size:1.2rem">0 dependencies react component to draw with mouse/touch</p>
@@ -8,7 +11,7 @@
 
 ## The problem
 
-You want a simple functionality to allow user to write/draw on image/ blank canvas with minimal size, then save the output to be uploaded to server/locally.
+You want a simple functionality to allow user to write/draw on image/ blank canvas, then save the output to be uploaded to server/locally.
 
 ## This solution
 
