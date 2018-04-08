@@ -3,7 +3,7 @@ import React from 'react';
 import { storiesOf, forceReRender } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { withKnobs, color, number, text, button } from '@storybook/addon-knobs/react';
-import { ReactPainter } from '../src/ReactPainter';
+import { ReactPainter } from '../dist/ReactPainter';
 import { FramedDiv } from './storybookComponent';
 
 const stories = storiesOf('ReactPainter', module);

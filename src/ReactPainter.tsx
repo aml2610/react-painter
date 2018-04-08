@@ -175,7 +175,7 @@ export class ReactPainter extends React.Component<ReactPainterProps> {
       .catch(err => console.error('in ReactPainter handleSave', err));
   };
 
-  getCanvasProps = (props?: PropsGetterInput): PropsGetterResult => {
+  getCanvasProps = (props: PropsGetterInput = {}): PropsGetterResult => {
     const {
       onMouseDown,
       onTouchStart,

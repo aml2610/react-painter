@@ -114,7 +114,7 @@ class ReactPainter extends React.Component {
                 .then(blob => onSave(blob))
                 .catch(err => console.error('in ReactPainter handleSave', err));
         };
-        this.getCanvasProps = (props) => {
+        this.getCanvasProps = (props = {}) => {
             const { onMouseDown, onTouchStart, onMouseMove, onTouchMove, onMouseUp, onTouchEnd, style, ref } = props, restProps = __rest(props, ["onMouseDown", "onTouchStart", "onMouseMove", "onTouchMove", "onMouseUp", "onTouchEnd", "style", "ref"]);
             return Object.assign({ onMouseDown: util_1.composeFn(onMouseDown, this.handleMouseDown), onTouchStart: util_1.composeFn(onTouchStart, this.handleMouseDown), onMouseMove: util_1.composeFn(onMouseMove, this.handleMouseMove), onTouchMove: util_1.composeFn(onTouchMove, this.handleMouseMove), onMouseUp: util_1.composeFn(onMouseUp, this.handleMouseUp), onTouchEnd: util_1.composeFn(onTouchEnd, this.handleMouseUp), ref: util_1.composeFn(ref, (ref) => {
                     this.canvasRef = ref;
