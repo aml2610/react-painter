@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 import { canvasToBlob, fileToUrl } from "./util";
 
@@ -10,6 +11,23 @@ const cleanUpCanvas = () => {
 };
 
 class ReactPainterContainer extends React.Component {
+  static propTypes = {
+    height: PropTypes.number.isRequired,
+    width: PropTypes.number.isRequired,
+    render: PropTypes.func.isRequired,
+    color: PropTypes.string,
+    onSave: PropTypes.func,
+    image: PropTypes.instanceOf(File)
+  };
+
+  static defaultProps = {
+    color: "#000",
+    image: undefined,
+    onSave() {
+      // noop
+    }
+  };
+
   canvasRef = null;
   ctx = null;
   lastX = 0;
@@ -95,7 +113,7 @@ class ReactPainterContainer extends React.Component {
     if (this.state.isDrawing) {
       const { offsetX, offsetY } = this.extractOffSetFromEvent(e);
       const ctx = this.ctx;
-      ctx.strokeStyle = color || "#000";
+      ctx.strokeStyle = color;
       const lastX = this.lastX;
       const lastY = this.lastY;
       ctx.beginPath();

@@ -6,13 +6,19 @@
   "scripts": {
     "build": "babel --out-dir dist src",
     "prebuild": "rimraf dist",
-    "test": "jest"
+    "test": "jest",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/malcolm-kee/react-painter.git"
   },
-  "keywords": ["react", "canvas", "drawing"],
+  "keywords": [
+    "react",
+    "canvas",
+    "drawing"
+  ],
   "author": {
     "name": "Malcolm Kee",
     "email": "malcolm.keeweesiong@gmail.com"
@@ -23,14 +29,23 @@
   },
   "homepage": "https://github.com/malcolm-kee/react-painter#readme",
   "peerDependencies": {
+    "prop-types": ">=15",
     "react": ">=0.14.x"
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^3.4.0",
+    "@storybook/addon-links": "^3.4.0",
+    "@storybook/addons": "^3.4.0",
+    "@storybook/react": "^3.4.0",
     "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
+    "babel-runtime": "^6.26.0",
+    "prop-types": "^15.6.1",
     "react": "^16.3.1",
     "rimraf": "^2.6.2"
-  }
+  },
+  "dependencies": {}
 }
