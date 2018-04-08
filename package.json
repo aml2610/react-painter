@@ -1,12 +1,15 @@
 {
   "name": "react-painter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A react component for drawing in canvas",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "babel --out-dir dist src",
     "lint": "eslint src/**/*.{js,jsx} --quiet",
     "prebuild": "rimraf dist",
+    "build:ts": "tsc --p tsconfig.json",
+    "prebuild:ts": "rimraf dist",
     "test": "jest",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
@@ -37,6 +40,9 @@
     "@storybook/addons": "^3.4.0",
     "@storybook/react": "^3.4.0",
     "@storybook/storybook-deployer": "^2.3.0",
+    "@types/prop-types": "^15.5.2",
+    "@types/react": "^16.3.5",
+    "@types/react-dom": "^16.0.4",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
@@ -44,6 +50,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "babel-runtime": "^6.26.0",
+    "core-js": "^2.5.4",
     "eslint": "^4.1.1",
     "eslint-config-react-app": "^2.1.0",
     "eslint-plugin-flowtype": "^2.46.1",
@@ -53,7 +60,8 @@
     "prettier": "^1.11.1",
     "prop-types": "^15.6.1",
     "react": "^16.3.1",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.6.2",
+    "typescript": "^2.8.1"
   },
   "dependencies": {},
   "prettier": {
