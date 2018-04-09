@@ -5,8 +5,9 @@
     "declaration": true,
     "noImplicitAny": true,
     "module": "commonjs",
-    "target": "es6",
-    "jsx": "react"
+    "target": "es5",
+    "jsx": "react",
+    "lib": ["dom", "es2015"]
   },
   "include": ["src/**/*"]
 }

@@ -1,4 +1,22 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var __rest = (this && this.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
@@ -9,139 +27,143 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const PropTypes = require("prop-types");
-const React = require("react");
-const util_1 = require("./util");
-const setUpForCanvas = () => {
+var PropTypes = require("prop-types");
+var React = require("react");
+var util_1 = require("./util");
+var setUpForCanvas = function () {
     document.body.style.touchAction = 'none';
 };
-const cleanUpCanvas = () => {
+var cleanUpCanvas = function () {
     document.body.style.touchAction = null;
 };
-class ReactPainter extends React.Component {
-    constructor() {
-        super(...arguments);
-        this.canvasRef = null;
-        this.ctx = null;
-        this.lastX = 0;
-        this.lastY = 0;
-        this.scalingFactor = 1;
-        this.state = {
+var ReactPainter = /** @class */ (function (_super) {
+    __extends(ReactPainter, _super);
+    function ReactPainter() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.canvasRef = null;
+        _this.ctx = null;
+        _this.lastX = 0;
+        _this.lastY = 0;
+        _this.scalingFactor = 1;
+        _this.state = {
             isDrawing: false,
             canvasWidth: 0,
             canvasHeight: 0
         };
-        this.extractOffSetFromEvent = (e) => {
-            const { offsetX, offsetY, touches } = e.nativeEvent;
+        _this.extractOffSetFromEvent = function (e) {
+            var _a = e.nativeEvent, offsetX = _a.offsetX, offsetY = _a.offsetY, touches = _a.touches;
             if (offsetX && offsetY) {
                 return {
-                    offsetX: offsetX * this.scalingFactor,
-                    offsetY: offsetY * this.scalingFactor
+                    offsetX: offsetX * _this.scalingFactor,
+                    offsetY: offsetY * _this.scalingFactor
                 };
             }
-            const rect = this.canvasRef.getBoundingClientRect();
-            const x = (touches[0].clientX - rect.left) * this.scalingFactor;
-            const y = (touches[0].clientY - rect.top) * this.scalingFactor;
+            var rect = _this.canvasRef.getBoundingClientRect();
+            var x = (touches[0].clientX - rect.left) * _this.scalingFactor;
+            var y = (touches[0].clientY - rect.top) * _this.scalingFactor;
             return {
                 offsetX: x,
                 offsetY: y
             };
         };
-        this.initializeCanvas = (width, height, image) => {
+        _this.initializeCanvas = function (width, height, image) {
             if (image) {
-                const [cvWidth, cvHeight, scalingRatio] = this.getDrawImageCanvasSize(width, height, image.naturalWidth, image.naturalHeight);
-                this.canvasRef.width = image.naturalWidth;
-                this.canvasRef.height = image.naturalHeight;
-                this.setState({
+                var _a = _this.getDrawImageCanvasSize(width, height, image.naturalWidth, image.naturalHeight), cvWidth = _a[0], cvHeight = _a[1], scalingRatio = _a[2];
+                _this.canvasRef.width = image.naturalWidth;
+                _this.canvasRef.height = image.naturalHeight;
+                _this.setState({
                     canvasWidth: cvWidth,
                     canvasHeight: cvHeight
                 });
-                this.scalingFactor = 1 / scalingRatio;
+                _this.scalingFactor = 1 / scalingRatio;
             }
             else {
-                this.canvasRef.width = width;
-                this.canvasRef.height = height;
-                this.setState({
+                _this.canvasRef.width = width;
+                _this.canvasRef.height = height;
+                _this.setState({
                     canvasWidth: width,
                     canvasHeight: height
                 });
             }
-            this.ctx = this.canvasRef.getContext('2d');
-            this.ctx.strokeStyle = '#000';
-            this.ctx.lineWidth = 5 * this.scalingFactor;
-            this.ctx.lineJoin = 'round';
-            this.ctx.lineCap = 'round';
+            _this.ctx = _this.canvasRef.getContext('2d');
+            _this.ctx.strokeStyle = '#000';
+            _this.ctx.lineWidth = 5 * _this.scalingFactor;
+            _this.ctx.lineJoin = 'round';
+            _this.ctx.lineCap = 'round';
         };
-        this.getDrawImageCanvasSize = (cWidth, cHeight, imageWidth, imageHeight) => {
+        _this.getDrawImageCanvasSize = function (cWidth, cHeight, imageWidth, imageHeight) {
             if (imageWidth <= cWidth) {
                 return [imageWidth, imageHeight, 1];
             }
-            const scalingRatio = cWidth / imageWidth;
+            var scalingRatio = cWidth / imageWidth;
             return [cWidth, scalingRatio * imageHeight, scalingRatio];
         };
-        this.handleMouseDown = (e) => {
-            const { offsetX, offsetY } = this.extractOffSetFromEvent(e);
-            this.lastX = offsetX;
-            this.lastY = offsetY;
-            this.setState({
+        _this.handleMouseDown = function (e) {
+            var _a = _this.extractOffSetFromEvent(e), offsetX = _a.offsetX, offsetY = _a.offsetY;
+            _this.lastX = offsetX;
+            _this.lastY = offsetY;
+            _this.setState({
                 isDrawing: true
             });
         };
-        this.handleMouseMove = (e) => {
-            const { color } = this.props;
-            if (this.state.isDrawing) {
-                const { offsetX, offsetY } = this.extractOffSetFromEvent(e);
-                const ctx = this.ctx;
+        _this.handleMouseMove = function (e) {
+            var color = _this.props.color;
+            if (_this.state.isDrawing) {
+                var _a = _this.extractOffSetFromEvent(e), offsetX = _a.offsetX, offsetY = _a.offsetY;
+                var ctx = _this.ctx;
                 ctx.strokeStyle = color;
-                const lastX = this.lastX;
-                const lastY = this.lastY;
+                var lastX = _this.lastX;
+                var lastY = _this.lastY;
                 ctx.beginPath();
                 ctx.moveTo(lastX, lastY);
                 ctx.lineTo(offsetX, offsetY);
                 ctx.stroke();
-                this.lastX = offsetX;
-                this.lastY = offsetY;
+                _this.lastX = offsetX;
+                _this.lastY = offsetY;
             }
         };
-        this.handleMouseUp = (e) => {
-            this.setState({
+        _this.handleMouseUp = function (e) {
+            _this.setState({
                 isDrawing: false
             });
         };
-        this.handleSave = () => {
-            const { onSave } = this.props;
-            util_1.canvasToBlob(this.canvasRef, 'image/png')
-                .then(blob => onSave(blob))
-                .catch(err => console.error('in ReactPainter handleSave', err));
+        _this.handleSave = function () {
+            var onSave = _this.props.onSave;
+            util_1.canvasToBlob(_this.canvasRef, 'image/png')
+                .then(function (blob) { return onSave(blob); })
+                .catch(function (err) { return console.error('in ReactPainter handleSave', err); });
         };
-        this.getCanvasProps = (props = {}) => {
-            const { onMouseDown, onTouchStart, onMouseMove, onTouchMove, onMouseUp, onTouchEnd, style, ref } = props, restProps = __rest(props, ["onMouseDown", "onTouchStart", "onMouseMove", "onTouchMove", "onMouseUp", "onTouchEnd", "style", "ref"]);
-            return Object.assign({ onMouseDown: util_1.composeFn(onMouseDown, this.handleMouseDown), onTouchStart: util_1.composeFn(onTouchStart, this.handleMouseDown), onMouseMove: util_1.composeFn(onMouseMove, this.handleMouseMove), onTouchMove: util_1.composeFn(onTouchMove, this.handleMouseMove), onMouseUp: util_1.composeFn(onMouseUp, this.handleMouseUp), onTouchEnd: util_1.composeFn(onTouchEnd, this.handleMouseUp), ref: util_1.composeFn(ref, (ref) => {
-                    this.canvasRef = ref;
-                }), style: Object.assign({ width: this.state.canvasWidth, height: this.state.canvasHeight }, style) }, restProps);
+        _this.getCanvasProps = function (props) {
+            if (props === void 0) { props = {}; }
+            var onMouseDown = props.onMouseDown, onTouchStart = props.onTouchStart, onMouseMove = props.onMouseMove, onTouchMove = props.onTouchMove, onMouseUp = props.onMouseUp, onTouchEnd = props.onTouchEnd, style = props.style, ref = props.ref, restProps = __rest(props, ["onMouseDown", "onTouchStart", "onMouseMove", "onTouchMove", "onMouseUp", "onTouchEnd", "style", "ref"]);
+            return __assign({ onMouseDown: util_1.composeFn(onMouseDown, _this.handleMouseDown), onTouchStart: util_1.composeFn(onTouchStart, _this.handleMouseDown), onMouseMove: util_1.composeFn(onMouseMove, _this.handleMouseMove), onTouchMove: util_1.composeFn(onTouchMove, _this.handleMouseMove), onMouseUp: util_1.composeFn(onMouseUp, _this.handleMouseUp), onTouchEnd: util_1.composeFn(onTouchEnd, _this.handleMouseUp), ref: util_1.composeFn(ref, function (ref) {
+                    _this.canvasRef = ref;
+                }), style: __assign({ width: _this.state.canvasWidth, height: _this.state.canvasHeight }, style) }, restProps);
         };
+        return _this;
     }
-    componentDidMount() {
-        const { width, height, image } = this.props;
+    ReactPainter.prototype.componentDidMount = function () {
+        var _this = this;
+        var _a = this.props, width = _a.width, height = _a.height, image = _a.image;
         setUpForCanvas();
         if (image) {
-            const img = new Image();
-            img.onload = () => {
-                this.initializeCanvas(width, height, img);
-                this.ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
+            var img_1 = new Image();
+            img_1.onload = function () {
+                _this.initializeCanvas(width, height, img_1);
+                _this.ctx.drawImage(img_1, 0, 0, img_1.naturalWidth, img_1.naturalHeight);
             };
-            img.src = typeof image === 'string' ? image : util_1.fileToUrl(image);
+            img_1.src = typeof image === 'string' ? image : util_1.fileToUrl(image);
         }
         else {
             this.initializeCanvas(width, height);
         }
-    }
-    componentWillUnmount() {
+    };
+    ReactPainter.prototype.componentWillUnmount = function () {
         cleanUpCanvas();
-    }
-    render() {
-        const { render } = this.props;
-        const canvasNode = React.createElement("canvas", Object.assign({ style: true }, this.getCanvasProps()));
+    };
+    ReactPainter.prototype.render = function () {
+        var render = this.props.render;
+        var canvasNode = React.createElement("canvas", __assign({ style: true }, this.getCanvasProps()));
         return typeof render === 'function'
             ? render({
                 canvas: canvasNode,
@@ -149,22 +171,23 @@ class ReactPainter extends React.Component {
                 getCanvasProps: this.getCanvasProps
             })
             : canvasNode;
-    }
-}
-ReactPainter.propTypes = {
-    height: PropTypes.number.isRequired,
-    width: PropTypes.number.isRequired,
-    render: PropTypes.func.isRequired,
-    color: PropTypes.string,
-    onSave: PropTypes.func,
-    image: PropTypes.oneOfType([PropTypes.instanceOf(File), PropTypes.string])
-};
-ReactPainter.defaultProps = {
-    color: '#000',
-    image: undefined,
-    onSave() {
-        // noop
-    }
-};
+    };
+    ReactPainter.propTypes = {
+        height: PropTypes.number.isRequired,
+        width: PropTypes.number.isRequired,
+        render: PropTypes.func.isRequired,
+        color: PropTypes.string,
+        onSave: PropTypes.func,
+        image: PropTypes.oneOfType([PropTypes.instanceOf(File), PropTypes.string])
+    };
+    ReactPainter.defaultProps = {
+        color: '#000',
+        image: undefined,
+        onSave: function () {
+            // noop
+        }
+    };
+    return ReactPainter;
+}(React.Component));
 exports.ReactPainter = ReactPainter;
 //# sourceMappingURL=ReactPainter.js.map
