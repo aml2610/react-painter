@@ -1,15 +1,13 @@
 {
   "name": "react-painter",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A react component for drawing in canvas",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "babel --out-dir dist src",
     "lint": "eslint src/**/*.{js,jsx} --quiet",
+    "build": "tsc --p tsconfig.json",
     "prebuild": "rimraf dist",
-    "build:ts": "tsc --p tsconfig.json",
-    "prebuild:ts": "rimraf dist",
     "test": "jest",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",

@@ -23,18 +23,18 @@ export interface IRenderProps {
     getCanvasProps: (props: PropsGetterInput) => PropsGetterResult;
 }
 export interface ReactPainterProps {
-    height: number;
-    width: number;
-    render: (props: IRenderProps) => JSX.Element;
+    height?: number;
+    width?: number;
     color?: string;
     onSave?: (blob: Blob) => void;
-    image: File | string;
+    image?: File | string;
+    render?: (props: IRenderProps) => JSX.Element;
 }
 export declare class ReactPainter extends React.Component<ReactPainterProps> {
     static propTypes: {
-        height: PropTypes.Validator<any>;
-        width: PropTypes.Validator<any>;
-        render: PropTypes.Validator<any>;
+        height: PropTypes.Requireable<any>;
+        width: PropTypes.Requireable<any>;
+        render: PropTypes.Requireable<any>;
         color: PropTypes.Requireable<any>;
         onSave: PropTypes.Requireable<any>;
         image: PropTypes.Requireable<any>;

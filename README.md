@@ -38,11 +38,11 @@ const Drawable = () => (
     width={300}
     height={300}
     onSave={blob => console.log(blob)}
-    render={({ triggerSave, getCanvasProps }) => (
+    render={({ triggerSave, canvas }) => (
       <div>
         <button onClick={triggerSave}>Save Canvas</button>
         <div>
-          <canvas {...getCanvasProps()} />
+          {canvas}
         </div>
       </div>
     )}

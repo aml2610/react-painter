@@ -173,14 +173,16 @@ var ReactPainter = /** @class */ (function (_super) {
             : canvasNode;
     };
     ReactPainter.propTypes = {
-        height: PropTypes.number.isRequired,
-        width: PropTypes.number.isRequired,
-        render: PropTypes.func.isRequired,
+        height: PropTypes.number,
+        width: PropTypes.number,
+        render: PropTypes.func,
         color: PropTypes.string,
         onSave: PropTypes.func,
         image: PropTypes.oneOfType([PropTypes.instanceOf(File), PropTypes.string])
     };
     ReactPainter.defaultProps = {
+        height: 300,
+        width: 300,
         color: '#000',
         image: undefined,
         onSave: function () {
