@@ -38,6 +38,7 @@
     "@storybook/addons": "^3.4.0",
     "@storybook/react": "^3.4.0",
     "@storybook/storybook-deployer": "^2.3.0",
+    "@types/jest": "^22.2.2",
     "@types/prop-types": "^15.5.2",
     "@types/react": "^16.3.5",
     "@types/react-dom": "^16.0.4",
@@ -48,6 +49,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "babel-runtime": "^6.26.0",
+    "canvas-prebuilt": "^1.6.5-prerelease.1",
     "core-js": "^2.5.4",
     "eslint": "^4.1.1",
     "eslint-config-react-app": "^2.1.0",
@@ -55,15 +57,27 @@
     "eslint-plugin-import": "^2.10.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.7.0",
+    "jest": "^22.4.3",
     "prettier": "^1.11.1",
     "prop-types": "^15.6.1",
     "react": "^16.3.1",
+    "react-testing-library": "^2.1.0",
     "rimraf": "^2.6.2",
+    "ts-jest": "^22.4.2",
     "typescript": "^2.8.1"
   },
   "dependencies": {},
   "prettier": {
     "singleQuote": true,
     "printWidth": 90
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "test/.*.(tsx?|jsx?)$",
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
+    "collectCoverageFrom": ["src/**/*.tsx", "src/**/*.ts"],
+    "coverageReporters": ["text-summary"]
   }
 }
