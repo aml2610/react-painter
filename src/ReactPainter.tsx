@@ -36,25 +36,27 @@ export interface IRenderProps {
 }
 
 export interface ReactPainterProps {
-  height: number;
-  width: number;
-  render: (props: IRenderProps) => JSX.Element;
+  height?: number;
+  width?: number;
   color?: string;
   onSave?: (blob: Blob) => void;
-  image: File | string;
+  image?: File | string;
+  render?: (props: IRenderProps) => JSX.Element;
 }
 
 export class ReactPainter extends React.Component<ReactPainterProps> {
   static propTypes = {
-    height: PropTypes.number.isRequired,
-    width: PropTypes.number.isRequired,
-    render: PropTypes.func.isRequired,
+    height: PropTypes.number,
+    width: PropTypes.number,
+    render: PropTypes.func,
     color: PropTypes.string,
     onSave: PropTypes.func,
     image: PropTypes.oneOfType([PropTypes.instanceOf(File), PropTypes.string])
   };
 
   static defaultProps: Partial<ReactPainterProps> = {
+    height: 300,
+    width: 300,
     color: '#000',
     image: undefined,
     onSave() {
