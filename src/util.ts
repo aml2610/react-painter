@@ -28,5 +28,7 @@ export const canvasToBlob = (canvas: HTMLCanvasElement, type: string): Promise<B
     }
   });
 
-export const composeFn = (...fns: Function[]) => (...args: any[]) =>
+type AnyFunction = (...params: any[]) => any;
+
+export const composeFn = (...fns: AnyFunction[]) => (...args: any[]) =>
   fns.forEach(fn => fn && fn(...args));

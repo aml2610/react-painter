@@ -49,28 +49,28 @@ export interface ReactPainterProps {
 
 export class ReactPainter extends React.Component<ReactPainterProps> {
   static propTypes = {
-    height: PropTypes.number,
-    width: PropTypes.number,
-    render: PropTypes.func,
     color: PropTypes.string,
-    lineWidth: PropTypes.number,
-    lineJoin: PropTypes.string,
+    height: PropTypes.number,
+    image: PropTypes.oneOfType([PropTypes.instanceOf(File), PropTypes.string]),
     lineCap: PropTypes.string,
+    lineJoin: PropTypes.string,
+    lineWidth: PropTypes.number,
     onSave: PropTypes.func,
-    image: PropTypes.oneOfType([PropTypes.instanceOf(File), PropTypes.string])
+    render: PropTypes.func,
+    width: PropTypes.number
   };
 
   static defaultProps: Partial<ReactPainterProps> = {
-    height: 300,
-    width: 300,
     color: '#000',
+    height: 300,
     image: undefined,
-    lineWidth: 5,
-    lineJoin: 'round',
     lineCap: 'round',
+    lineJoin: 'round',
+    lineWidth: 5,
     onSave() {
       // noop
-    }
+    },
+    width: 300
   };
 
   canvasRef: HTMLCanvasElement = null;
@@ -80,9 +80,9 @@ export class ReactPainter extends React.Component<ReactPainterProps> {
   scalingFactor = 1;
 
   state = {
-    isDrawing: false,
+    canvasHeight: 0,
     canvasWidth: 0,
-    canvasHeight: 0
+    isDrawing: false
   };
 
   extractOffSetFromEvent = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
@@ -114,16 +114,16 @@ export class ReactPainter extends React.Component<ReactPainterProps> {
       this.canvasRef.width = image.naturalWidth;
       this.canvasRef.height = image.naturalHeight;
       this.setState({
-        canvasWidth: cvWidth,
-        canvasHeight: cvHeight
+        canvasHeight: cvHeight,
+        canvasWidth: cvWidth
       });
       this.scalingFactor = 1 / scalingRatio;
     } else {
       this.canvasRef.width = width;
       this.canvasRef.height = height;
       this.setState({
-        canvasWidth: width,
-        canvasHeight: height
+        canvasHeight: height,
+        canvasWidth: width
       });
     }
     const { color, lineWidth, lineJoin, lineCap } = this.props;
@@ -186,7 +186,7 @@ export class ReactPainter extends React.Component<ReactPainterProps> {
   handleSave = () => {
     const { onSave } = this.props;
     canvasToBlob(this.canvasRef, 'image/png')
-      .then(blob => onSave(blob))
+      .then((blob: Blob) => onSave(blob))
       .catch(err => console.error('in ReactPainter handleSave', err));
   };
 
@@ -204,17 +204,17 @@ export class ReactPainter extends React.Component<ReactPainterProps> {
     } = props;
     return {
       onMouseDown: composeFn(onMouseDown, this.handleMouseDown),
-      onTouchStart: composeFn(onTouchStart, this.handleMouseDown),
       onMouseMove: composeFn(onMouseMove, this.handleMouseMove),
-      onTouchMove: composeFn(onTouchMove, this.handleMouseMove),
       onMouseUp: composeFn(onMouseUp, this.handleMouseUp),
       onTouchEnd: composeFn(onTouchEnd, this.handleMouseUp),
-      ref: composeFn(ref, (ref: HTMLCanvasElement) => {
-        this.canvasRef = ref;
+      onTouchMove: composeFn(onTouchMove, this.handleMouseMove),
+      onTouchStart: composeFn(onTouchStart, this.handleMouseDown),
+      ref: composeFn(ref, (canvasRef: HTMLCanvasElement) => {
+        this.canvasRef = canvasRef;
       }),
       style: {
-        width: this.state.canvasWidth,
         height: this.state.canvasHeight,
+        width: this.state.canvasWidth,
         ...style
       },
       ...restProps
@@ -242,12 +242,12 @@ export class ReactPainter extends React.Component<ReactPainterProps> {
 
   render() {
     const { render } = this.props;
-    const canvasNode = <canvas style {...this.getCanvasProps()} />;
+    const canvasNode = <canvas {...this.getCanvasProps()} />;
     return typeof render === 'function'
       ? render({
           canvas: canvasNode,
-          triggerSave: this.handleSave,
-          getCanvasProps: this.getCanvasProps
+          getCanvasProps: this.getCanvasProps,
+          triggerSave: this.handleSave
         })
       : canvasNode;
   }

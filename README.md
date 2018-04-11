@@ -41,9 +41,7 @@ const Drawable = () => (
     render={({ triggerSave, canvas }) => (
       <div>
         <button onClick={triggerSave}>Save Canvas</button>
-        <div>
-          {canvas}
-        </div>
+        <div>{canvas}</div>
       </div>
     )}
   />
@@ -71,6 +69,27 @@ Similar to height, this value should not be changed after mounted.
 > defaults to `#000`
 
 Set the stroke color.
+This value can be changed dynamically.
+
+### lineWidth?: number
+
+> defaults to `5`
+
+Set the stroke line width.
+This value can be changed dynamically.
+
+### lineCap?: 'round' | 'butt' | 'square'
+
+> defaults to `round`
+
+Set the stroke line cap.
+This value can be changed dynamically.
+
+### lineJoin?: 'round' | 'bevel' | 'miter'
+
+> defaults to `round`
+
+Set the stroke line join.
 This value can be changed dynamically.
 
 ### onSave?: (blob: Blob) => void
