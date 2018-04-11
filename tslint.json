@@ -1,0 +1,7 @@
+{
+  "extends": ["tslint:latest", "tslint-react"],
+  "rules": {
+    "quotemark": [true, "single", "jsx-double"],
+    "interface-name": [true, "never-prefix"]
+  }
+}

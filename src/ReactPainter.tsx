@@ -1,6 +1,6 @@
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { canvasToBlob, fileToUrl, composeFn } from './util';
+import { canvasToBlob, composeFn, fileToUrl } from './util';
 
 const setUpForCanvas = () => {
   document.body.style.touchAction = 'none';
@@ -29,7 +29,7 @@ export interface PropsGetterResult extends CanvasProps {
   [key: string]: any;
 }
 
-export interface IRenderProps {
+export interface RenderProps {
   canvas: JSX.Element;
   triggerSave: () => void;
   getCanvasProps: (props: PropsGetterInput) => PropsGetterResult;
@@ -39,9 +39,12 @@ export interface ReactPainterProps {
   height?: number;
   width?: number;
   color?: string;
+  lineWidth?: number;
+  lineJoin?: 'round' | 'bevel' | 'miter';
+  lineCap?: 'round' | 'butt' | 'square';
   onSave?: (blob: Blob) => void;
   image?: File | string;
-  render?: (props: IRenderProps) => JSX.Element;
+  render?: (props: RenderProps) => JSX.Element;
 }
 
 export class ReactPainter extends React.Component<ReactPainterProps> {
@@ -50,6 +53,9 @@ export class ReactPainter extends React.Component<ReactPainterProps> {
     width: PropTypes.number,
     render: PropTypes.func,
     color: PropTypes.string,
+    lineWidth: PropTypes.number,
+    lineJoin: PropTypes.string,
+    lineCap: PropTypes.string,
     onSave: PropTypes.func,
     image: PropTypes.oneOfType([PropTypes.instanceOf(File), PropTypes.string])
   };
@@ -59,6 +65,9 @@ export class ReactPainter extends React.Component<ReactPainterProps> {
     width: 300,
     color: '#000',
     image: undefined,
+    lineWidth: 5,
+    lineJoin: 'round',
+    lineCap: 'round',
     onSave() {
       // noop
     }
@@ -117,11 +126,12 @@ export class ReactPainter extends React.Component<ReactPainterProps> {
         canvasHeight: height
       });
     }
+    const { color, lineWidth, lineJoin, lineCap } = this.props;
     this.ctx = this.canvasRef.getContext('2d');
-    this.ctx.strokeStyle = '#000';
-    this.ctx.lineWidth = 5 * this.scalingFactor;
-    this.ctx.lineJoin = 'round';
-    this.ctx.lineCap = 'round';
+    this.ctx.strokeStyle = color;
+    this.ctx.lineWidth = lineWidth * this.scalingFactor;
+    this.ctx.lineJoin = lineJoin;
+    this.ctx.lineCap = lineCap;
   };
 
   getDrawImageCanvasSize = (
@@ -148,11 +158,14 @@ export class ReactPainter extends React.Component<ReactPainterProps> {
   };
 
   handleMouseMove = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
-    const { color } = this.props;
+    const { color, lineWidth, lineCap, lineJoin } = this.props;
     if (this.state.isDrawing) {
       const { offsetX, offsetY } = this.extractOffSetFromEvent(e);
       const ctx = this.ctx;
       ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth * this.scalingFactor;
+      ctx.lineCap = lineCap;
+      ctx.lineJoin = lineJoin;
       const lastX = this.lastX;
       const lastY = this.lastY;
       ctx.beginPath();

@@ -85,11 +85,12 @@ var ReactPainter = /** @class */ (function (_super) {
                     canvasHeight: height
                 });
             }
+            var _b = _this.props, color = _b.color, lineWidth = _b.lineWidth, lineJoin = _b.lineJoin, lineCap = _b.lineCap;
             _this.ctx = _this.canvasRef.getContext('2d');
-            _this.ctx.strokeStyle = '#000';
-            _this.ctx.lineWidth = 5 * _this.scalingFactor;
-            _this.ctx.lineJoin = 'round';
-            _this.ctx.lineCap = 'round';
+            _this.ctx.strokeStyle = color;
+            _this.ctx.lineWidth = lineWidth * _this.scalingFactor;
+            _this.ctx.lineJoin = lineJoin;
+            _this.ctx.lineCap = lineCap;
         };
         _this.getDrawImageCanvasSize = function (cWidth, cHeight, imageWidth, imageHeight) {
             if (imageWidth <= cWidth) {
@@ -107,11 +108,14 @@ var ReactPainter = /** @class */ (function (_super) {
             });
         };
         _this.handleMouseMove = function (e) {
-            var color = _this.props.color;
+            var _a = _this.props, color = _a.color, lineWidth = _a.lineWidth, lineCap = _a.lineCap, lineJoin = _a.lineJoin;
             if (_this.state.isDrawing) {
-                var _a = _this.extractOffSetFromEvent(e), offsetX = _a.offsetX, offsetY = _a.offsetY;
+                var _b = _this.extractOffSetFromEvent(e), offsetX = _b.offsetX, offsetY = _b.offsetY;
                 var ctx = _this.ctx;
                 ctx.strokeStyle = color;
+                ctx.lineWidth = lineWidth * _this.scalingFactor;
+                ctx.lineCap = lineCap;
+                ctx.lineJoin = lineJoin;
                 var lastX = _this.lastX;
                 var lastY = _this.lastY;
                 ctx.beginPath();
@@ -177,6 +181,9 @@ var ReactPainter = /** @class */ (function (_super) {
         width: PropTypes.number,
         render: PropTypes.func,
         color: PropTypes.string,
+        lineWidth: PropTypes.number,
+        lineJoin: PropTypes.string,
+        lineCap: PropTypes.string,
         onSave: PropTypes.func,
         image: PropTypes.oneOfType([PropTypes.instanceOf(File), PropTypes.string])
     };
@@ -185,6 +192,9 @@ var ReactPainter = /** @class */ (function (_super) {
         width: 300,
         color: '#000',
         image: undefined,
+        lineWidth: 5,
+        lineJoin: 'round',
+        lineCap: 'round',
         onSave: function () {
             // noop
         }

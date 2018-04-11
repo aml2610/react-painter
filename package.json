@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "lint": "eslint src/**/*.{js,jsx} --quiet",
+    "lint": "tslint src/**/*.{ts,tsx}",
     "build": "tsc --p tsconfig.json",
     "prebuild": "rimraf dist",
     "test": "jest",
@@ -17,7 +17,11 @@
     "type": "git",
     "url": "git+https://github.com/malcolm-kee/react-painter.git"
   },
-  "keywords": ["react", "canvas", "drawing"],
+  "keywords": [
+    "react",
+    "canvas",
+    "drawing"
+  ],
   "author": {
     "name": "Malcolm Kee",
     "email": "malcolm.keeweesiong@gmail.com"
@@ -64,6 +68,8 @@
     "react-testing-library": "^2.1.0",
     "rimraf": "^2.6.2",
     "ts-jest": "^22.4.2",
+    "tslint": "^5.9.1",
+    "tslint-react": "^3.5.1",
     "typescript": "^2.8.1"
   },
   "dependencies": {},
@@ -76,8 +82,20 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "test/.*.(tsx?|jsx?)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
-    "collectCoverageFrom": ["src/**/*.tsx", "src/**/*.ts"],
-    "coverageReporters": ["text-summary"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.tsx",
+      "src/**/*.ts"
+    ],
+    "coverageReporters": [
+      "text-summary"
+    ]
   }
 }

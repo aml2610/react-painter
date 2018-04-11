@@ -26,6 +26,9 @@ export interface ReactPainterProps {
     height?: number;
     width?: number;
     color?: string;
+    lineWidth?: number;
+    lineJoin?: 'round' | 'bevel' | 'miter';
+    lineCap?: 'round' | 'butt' | 'square';
     onSave?: (blob: Blob) => void;
     image?: File | string;
     render?: (props: IRenderProps) => JSX.Element;
@@ -36,6 +39,9 @@ export declare class ReactPainter extends React.Component<ReactPainterProps> {
         width: PropTypes.Requireable<any>;
         render: PropTypes.Requireable<any>;
         color: PropTypes.Requireable<any>;
+        lineWidth: PropTypes.Requireable<any>;
+        lineJoin: PropTypes.Requireable<any>;
+        lineCap: PropTypes.Requireable<any>;
         onSave: PropTypes.Requireable<any>;
         image: PropTypes.Requireable<any>;
     };
