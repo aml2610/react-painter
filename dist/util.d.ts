@@ -1,4 +1,4 @@
-export declare function dataUrlToArrayBuffer(dataURI: string): ArrayBuffer;
+export declare function dataUrlToArrayBuffer(dataURI: string): [string, ArrayBuffer];
 export declare function fileToUrl(file: File): string;
 export declare const canvasToBlob: (canvas: HTMLCanvasElement, type: string) => Promise<Blob>;
-export declare const composeFn: (...fns: Function[]) => (...args: any[]) => void;
+export declare const composeFn: (...fns: ((...params: any[]) => any)[]) => (...args: any[]) => void;

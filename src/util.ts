@@ -1,10 +1,11 @@
-export function dataUrlToArrayBuffer(dataURI: string) {
+export function dataUrlToArrayBuffer(dataURI: string): [string, ArrayBuffer] {
+  const type = dataURI.match(/:([^}]*);/)[1];
   const byteString = atob(dataURI.split(',')[1]);
   const ia = new Uint8Array(byteString.length);
   for (let i = 0; i < byteString.length; i++) {
     ia[i] = byteString.charCodeAt(i);
   }
-  return ia.buffer; // potential bug
+  return [type, ia.buffer]; // potential bug
 }
 
 export function fileToUrl(file: File): string {
@@ -23,8 +24,8 @@ export const canvasToBlob = (canvas: HTMLCanvasElement, type: string): Promise<B
       canvas.toBlob(blob => resolve(blob), type);
     } else {
       const dataURL = canvas.toDataURL(type);
-      const buffer = dataUrlToArrayBuffer(dataURL);
-      resolve(new Blob([buffer], { type }));
+      const [generatedType, buffer] = dataUrlToArrayBuffer(dataURL);
+      resolve(new Blob([buffer], { type: generatedType }));
     }
   });
 

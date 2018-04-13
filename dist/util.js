@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function dataUrlToArrayBuffer(dataURI) {
+    var type = dataURI.match(/:([^}]*);/)[1];
     var byteString = atob(dataURI.split(',')[1]);
     var ia = new Uint8Array(byteString.length);
     for (var i = 0; i < byteString.length; i++) {
         ia[i] = byteString.charCodeAt(i);
     }
-    return ia.buffer; // potential bug
+    return [type, ia.buffer]; // potential bug
 }
 exports.dataUrlToArrayBuffer = dataUrlToArrayBuffer;
 function fileToUrl(file) {
@@ -26,8 +27,8 @@ exports.canvasToBlob = function (canvas, type) {
         }
         else {
             var dataURL = canvas.toDataURL(type);
-            var buffer = dataUrlToArrayBuffer(dataURL);
-            resolve(new Blob([buffer], { type: type }));
+            var _a = dataUrlToArrayBuffer(dataURL), generatedType = _a[0], buffer = _a[1];
+            resolve(new Blob([buffer], { type: generatedType }));
         }
     });
 };

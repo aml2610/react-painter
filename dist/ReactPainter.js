@@ -46,9 +46,9 @@ var ReactPainter = /** @class */ (function (_super) {
         _this.lastY = 0;
         _this.scalingFactor = 1;
         _this.state = {
-            isDrawing: false,
+            canvasHeight: 0,
             canvasWidth: 0,
-            canvasHeight: 0
+            isDrawing: false
         };
         _this.extractOffSetFromEvent = function (e) {
             var _a = e.nativeEvent, offsetX = _a.offsetX, offsetY = _a.offsetY, touches = _a.touches;
@@ -72,8 +72,8 @@ var ReactPainter = /** @class */ (function (_super) {
                 _this.canvasRef.width = image.naturalWidth;
                 _this.canvasRef.height = image.naturalHeight;
                 _this.setState({
-                    canvasWidth: cvWidth,
-                    canvasHeight: cvHeight
+                    canvasHeight: cvHeight,
+                    canvasWidth: cvWidth
                 });
                 _this.scalingFactor = 1 / scalingRatio;
             }
@@ -81,8 +81,8 @@ var ReactPainter = /** @class */ (function (_super) {
                 _this.canvasRef.width = width;
                 _this.canvasRef.height = height;
                 _this.setState({
-                    canvasWidth: width,
-                    canvasHeight: height
+                    canvasHeight: height,
+                    canvasWidth: width
                 });
             }
             var _b = _this.props, color = _b.color, lineWidth = _b.lineWidth, lineJoin = _b.lineJoin, lineCap = _b.lineCap;
@@ -140,9 +140,9 @@ var ReactPainter = /** @class */ (function (_super) {
         _this.getCanvasProps = function (props) {
             if (props === void 0) { props = {}; }
             var onMouseDown = props.onMouseDown, onTouchStart = props.onTouchStart, onMouseMove = props.onMouseMove, onTouchMove = props.onTouchMove, onMouseUp = props.onMouseUp, onTouchEnd = props.onTouchEnd, style = props.style, ref = props.ref, restProps = __rest(props, ["onMouseDown", "onTouchStart", "onMouseMove", "onTouchMove", "onMouseUp", "onTouchEnd", "style", "ref"]);
-            return __assign({ onMouseDown: util_1.composeFn(onMouseDown, _this.handleMouseDown), onTouchStart: util_1.composeFn(onTouchStart, _this.handleMouseDown), onMouseMove: util_1.composeFn(onMouseMove, _this.handleMouseMove), onTouchMove: util_1.composeFn(onTouchMove, _this.handleMouseMove), onMouseUp: util_1.composeFn(onMouseUp, _this.handleMouseUp), onTouchEnd: util_1.composeFn(onTouchEnd, _this.handleMouseUp), ref: util_1.composeFn(ref, function (ref) {
-                    _this.canvasRef = ref;
-                }), style: __assign({ width: _this.state.canvasWidth, height: _this.state.canvasHeight }, style) }, restProps);
+            return __assign({ onMouseDown: util_1.composeFn(onMouseDown, _this.handleMouseDown), onMouseMove: util_1.composeFn(onMouseMove, _this.handleMouseMove), onMouseUp: util_1.composeFn(onMouseUp, _this.handleMouseUp), onTouchEnd: util_1.composeFn(onTouchEnd, _this.handleMouseUp), onTouchMove: util_1.composeFn(onTouchMove, _this.handleMouseMove), onTouchStart: util_1.composeFn(onTouchStart, _this.handleMouseDown), ref: util_1.composeFn(ref, function (canvasRef) {
+                    _this.canvasRef = canvasRef;
+                }), style: __assign({ height: _this.state.canvasHeight, width: _this.state.canvasWidth }, style) }, restProps);
         };
         return _this;
     }
@@ -167,37 +167,37 @@ var ReactPainter = /** @class */ (function (_super) {
     };
     ReactPainter.prototype.render = function () {
         var render = this.props.render;
-        var canvasNode = React.createElement("canvas", __assign({ style: true }, this.getCanvasProps()));
+        var canvasNode = React.createElement("canvas", __assign({}, this.getCanvasProps()));
         return typeof render === 'function'
             ? render({
                 canvas: canvasNode,
-                triggerSave: this.handleSave,
-                getCanvasProps: this.getCanvasProps
+                getCanvasProps: this.getCanvasProps,
+                triggerSave: this.handleSave
             })
             : canvasNode;
     };
     ReactPainter.propTypes = {
-        height: PropTypes.number,
-        width: PropTypes.number,
-        render: PropTypes.func,
         color: PropTypes.string,
-        lineWidth: PropTypes.number,
-        lineJoin: PropTypes.string,
+        height: PropTypes.number,
+        image: PropTypes.oneOfType([PropTypes.instanceOf(File), PropTypes.string]),
         lineCap: PropTypes.string,
+        lineJoin: PropTypes.string,
+        lineWidth: PropTypes.number,
         onSave: PropTypes.func,
-        image: PropTypes.oneOfType([PropTypes.instanceOf(File), PropTypes.string])
+        render: PropTypes.func,
+        width: PropTypes.number
     };
     ReactPainter.defaultProps = {
-        height: 300,
-        width: 300,
         color: '#000',
+        height: 300,
         image: undefined,
-        lineWidth: 5,
-        lineJoin: 'round',
         lineCap: 'round',
+        lineJoin: 'round',
+        lineWidth: 5,
         onSave: function () {
             // noop
-        }
+        },
+        width: 300
     };
     return ReactPainter;
 }(React.Component));
