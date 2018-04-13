@@ -10,6 +10,20 @@ function dataUrlToArrayBuffer(dataURI) {
     return [type, ia.buffer]; // potential bug
 }
 exports.dataUrlToArrayBuffer = dataUrlToArrayBuffer;
+exports.checkImageCrossOriginAllowed = function (imageUrl) {
+    return new Promise(function (resolve) {
+        try {
+            fetch(imageUrl, {
+                method: 'HEAD'
+            })
+                .then(function () { return resolve(true); })
+                .catch(function () { return resolve(false); });
+        }
+        catch (e) {
+            resolve(false);
+        }
+    });
+};
 function fileToUrl(file) {
     var url = window.URL || window.webkitURL;
     try {

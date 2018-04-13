@@ -1,6 +1,6 @@
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { canvasToBlob, composeFn, fileToUrl } from './util';
+import { canvasToBlob, checkImageCrossOriginAllowed, composeFn, fileToUrl } from './util';
 
 const setUpForCanvas = () => {
   document.body.style.touchAction = 'none';
@@ -33,6 +33,7 @@ export interface RenderProps {
   canvas: JSX.Element;
   triggerSave: () => void;
   getCanvasProps: (props: PropsGetterInput) => PropsGetterResult;
+  imageCanDownload: boolean;
 }
 
 export interface ReactPainterProps {
@@ -82,6 +83,7 @@ export class ReactPainter extends React.Component<ReactPainterProps> {
   state = {
     canvasHeight: 0,
     canvasWidth: 0,
+    imageCanDownload: false,
     isDrawing: false
   };
 
@@ -230,7 +232,27 @@ export class ReactPainter extends React.Component<ReactPainterProps> {
         this.initializeCanvas(width, height, img);
         this.ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
       };
-      img.src = typeof image === 'string' ? image : fileToUrl(image);
+      if (typeof image === 'string') {
+        checkImageCrossOriginAllowed(image).then(result => {
+          if (result) {
+            img.crossOrigin = 'anonymous';
+            img.src = image;
+            this.setState({
+              imageCanDownload: true
+            });
+          } else {
+            img.src = '';
+            this.setState({
+              imageCanDownload: false
+            });
+          }
+        });
+      } else {
+        img.src = fileToUrl(image);
+        this.setState({
+          imageCanDownload: true
+        });
+      }
     } else {
       this.initializeCanvas(width, height);
     }
@@ -247,6 +269,7 @@ export class ReactPainter extends React.Component<ReactPainterProps> {
       ? render({
           canvas: canvasNode,
           getCanvasProps: this.getCanvasProps,
+          imageCanDownload: this.state.imageCanDownload,
           triggerSave: this.handleSave
         })
       : canvasNode;

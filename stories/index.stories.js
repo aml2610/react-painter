@@ -11,6 +11,7 @@ import {
   selectV2
 } from '@storybook/addon-knobs/react';
 import { ReactPainter } from '../dist/ReactPainter';
+import { fileToUrl } from '../dist/util';
 import { FramedDiv } from './storybookComponent';
 
 const stories = storiesOf('ReactPainter', module);
@@ -29,6 +30,14 @@ const lineJoinOptions = {
   miter: 'miter'
 };
 
+const styles = {
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  }
+};
+
 stories.add('basic', () => (
   <ReactPainter
     width={number('width', 300)}
@@ -39,9 +48,11 @@ stories.add('basic', () => (
     lineJoin={selectV2('lineJoin', lineJoinOptions, 'round')}
     onSave={action('canvas saved!')}
     render={({ triggerSave, canvas }) => (
-      <div>
-        <button onClick={forceReRender}>Clear</button>
-        <button onClick={triggerSave}>Save Canvas</button>
+      <div style={styles.root}>
+        <div>
+          <button onClick={forceReRender}>Clear</button>
+          <button onClick={triggerSave}>Save Canvas</button>
+        </div>
         <FramedDiv>{canvas}</FramedDiv>
       </div>
     )}
@@ -58,12 +69,14 @@ stories.add('with image', () => (
     lineJoin={selectV2('lineJoin', lineJoinOptions, 'round')}
     onSave={action('canvas saved!')}
     image={text('image url', 'https://picsum.photos/200/300')}
-    render={({ triggerSave, getCanvasProps }) => (
-      <div>
-        <button onClick={forceReRender}>Rerender (Use if you update image url)</button>
-        <button onClick={triggerSave} disabled>
-          Save Canvas (Disabled because the image is from different domain)
-        </button>
+    render={({ triggerSave, getCanvasProps, imageCanDownload }) => (
+      <div style={styles.root}>
+        <div>
+          <button onClick={forceReRender}>Rerender (Use if you update image url)</button>
+          <button onClick={triggerSave} disabled={!imageCanDownload}>
+            Save Canvas
+          </button>
+        </div>
         <FramedDiv>
           <canvas {...getCanvasProps()} />
         </FramedDiv>
@@ -74,7 +87,8 @@ stories.add('with image', () => (
 
 class WithFileInputDemo extends React.Component {
   state = {
-    image: null
+    image: null,
+    savedImage: null
   };
 
   handleFileInputChange = ev => {
@@ -90,23 +104,37 @@ class WithFileInputDemo extends React.Component {
     }
   };
 
+  handleSave = blob => {
+    const url = fileToUrl(blob);
+    this.setState({
+      savedImage: url
+    });
+  };
+
   render() {
-    const { width, height, color, onSave } = this.props;
+    const { width, height, color, lineWidth, lineCap, lineJoin } = this.props;
 
     return this.state.image ? (
       <ReactPainter
         width={width}
         height={height}
         color={color}
-        lineWidth={number('lineWidth', 5)}
-        lineCap={selectV2('lineCap', lineCapOptions, 'round')}
-        lineJoin={selectV2('lineJoin', lineJoinOptions, 'round')}
-        onSave={onSave}
+        lineWidth={lineWidth}
+        lineCap={lineCap}
+        lineJoin={lineJoin}
+        onSave={this.handleSave}
         image={this.state.image}
         render={({ triggerSave, getCanvasProps }) => (
-          <div>
-            <button onClick={forceReRender}>Rerender (To choose another file)</button>
-            <button onClick={triggerSave}>Save Canvas</button>
+          <div style={styles.root}>
+            <div>
+              <button onClick={forceReRender}>Rerender (To choose another file)</button>
+              <button onClick={triggerSave}>Save Canvas</button>
+            </div>
+            {this.state.savedImage !== null ? (
+              <a href={this.state.savedImage} download>
+                Download
+              </a>
+            ) : null}
             <FramedDiv>
               <canvas {...getCanvasProps()} />
             </FramedDiv>
@@ -124,6 +152,8 @@ stories.add('with file input', () => (
     width={number('width', 300)}
     height={number('height', 300)}
     color={color('color', '#000')}
-    onSave={action('canvas saved!')}
+    lineWidth={number('lineWidth', 5)}
+    lineCap={selectV2('lineCap', lineCapOptions, 'round')}
+    lineJoin={selectV2('lineJoin', lineJoinOptions, 'round')}
   />
 ));

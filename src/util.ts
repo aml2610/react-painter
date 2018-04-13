@@ -8,6 +8,19 @@ export function dataUrlToArrayBuffer(dataURI: string): [string, ArrayBuffer] {
   return [type, ia.buffer]; // potential bug
 }
 
+export const checkImageCrossOriginAllowed = (imageUrl: string): Promise<boolean> =>
+  new Promise(resolve => {
+    try {
+      fetch(imageUrl, {
+        method: 'HEAD'
+      })
+        .then(() => resolve(true))
+        .catch(() => resolve(false));
+    } catch (e) {
+      resolve(false);
+    }
+  });
+
 export function fileToUrl(file: File): string {
   const url = window.URL || (window as any).webkitURL;
 

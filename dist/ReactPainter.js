@@ -48,6 +48,7 @@ var ReactPainter = /** @class */ (function (_super) {
         _this.state = {
             canvasHeight: 0,
             canvasWidth: 0,
+            imageCanDownload: false,
             isDrawing: false
         };
         _this.extractOffSetFromEvent = function (e) {
@@ -156,7 +157,29 @@ var ReactPainter = /** @class */ (function (_super) {
                 _this.initializeCanvas(width, height, img_1);
                 _this.ctx.drawImage(img_1, 0, 0, img_1.naturalWidth, img_1.naturalHeight);
             };
-            img_1.src = typeof image === 'string' ? image : util_1.fileToUrl(image);
+            if (typeof image === 'string') {
+                util_1.checkImageCrossOriginAllowed(image).then(function (result) {
+                    if (result) {
+                        img_1.crossOrigin = 'anonymous';
+                        img_1.src = image;
+                        _this.setState({
+                            imageCanDownload: true
+                        });
+                    }
+                    else {
+                        img_1.src = '';
+                        _this.setState({
+                            imageCanDownload: false
+                        });
+                    }
+                });
+            }
+            else {
+                img_1.src = util_1.fileToUrl(image);
+                this.setState({
+                    imageCanDownload: true
+                });
+            }
         }
         else {
             this.initializeCanvas(width, height);
@@ -172,6 +195,7 @@ var ReactPainter = /** @class */ (function (_super) {
             ? render({
                 canvas: canvasNode,
                 getCanvasProps: this.getCanvasProps,
+                imageCanDownload: this.state.imageCanDownload,
                 triggerSave: this.handleSave
             })
             : canvasNode;
