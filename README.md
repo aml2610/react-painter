@@ -15,9 +15,8 @@ You want a simple functionality to allow user to write/draw on image/ blank canv
 
 ## This solution
 
-This is a simple component wraps around html canvas component. It uses a render
-prop which gives you maximum flexibility with a minimal API
-because you are able to extends functionality and render the result as you wish.
+This is a simple component that utilize HTML5 canvas and File API.
+It uses a render prop which gives you maximum flexibility with a minimal API because you are able to extends functionality and render the result as you wish.
 
 ## Installation
 
@@ -102,7 +101,7 @@ Your handler when the canvas is saved.
 
 The image that would takes up the whole canvas. If it is a string, then it should be an URL for an image.
 
-> Note: You may not be able to save the image if the image is from other domain due to CORS issue. I'm still researching how to workaround this.
+> Note: It the image is not accessible publicly or via cookies, the image will not be shown. You can check the result via `imageCanDownload` property.
 
 ### render?: (props: RenderProps) => ReactNode
 
@@ -143,6 +142,48 @@ Example:
       <div>Awesome heading</div>
       <div className="awesomeContainer">{canvas}</div>
       <button onClick={triggerSave}>Save</button>
+    </div>
+  )}
+/>
+```
+
+### imageCanDownload: boolean;
+
+This properties let you know if the image is inserted successfully. By default it is `null` until the checking of image import is successful.
+
+Example:
+
+```jsx
+<ReactPainter
+  image={/* your imageUrl prop here */}
+  render={({ canvas, triggerSave, imageCanDownload }) => (
+    <div>
+      <div>Awesome heading</div>
+      {imageCanDownload ? <p>Sorry, the image that you have provided is not accessible.</p> : null}
+      <div className="awesomeContainer">{canvas}</div>
+      <button onClick={triggerSave}>Save</button>
+    </div>
+  )}
+```
+
+### imageDownloadUrl: string;
+
+This properties is the URL can you can use to allow user to download the saved image after invoke `triggerSave`. By default it is `null` until the `triggerSave` is invoked.
+
+Example:
+
+```jsx
+<ReactPainter
+  render={({ canvas, triggerSave, imageDownloadUrl }) => (
+    <div>
+      <div>Awesome heading</div>
+      <div className="awesomeContainer">{canvas}</div>
+      <button onClick={triggerSave}>Save</button>
+      {imageDownloadUrl ? (
+        <a href={imageDownloadUrl} download>
+          Download
+        </a>
+      ) : null}
     </div>
   )}
 />

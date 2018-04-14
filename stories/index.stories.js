@@ -10,8 +10,7 @@ import {
   button,
   selectV2
 } from '@storybook/addon-knobs/react';
-import { ReactPainter } from '../dist/ReactPainter';
-import { fileToUrl } from '../dist/util';
+import { ReactPainter } from '../dist';
 import { FramedDiv } from './storybookComponent';
 
 const stories = storiesOf('ReactPainter', module);
@@ -69,13 +68,18 @@ stories.add('with image', () => (
     lineJoin={selectV2('lineJoin', lineJoinOptions, 'round')}
     onSave={action('canvas saved!')}
     image={text('image url', 'https://picsum.photos/200/300')}
-    render={({ triggerSave, getCanvasProps, imageCanDownload }) => (
+    render={({ triggerSave, getCanvasProps, imageCanDownload, imageDownloadUrl }) => (
       <div style={styles.root}>
         <div>
           <button onClick={forceReRender}>Rerender (Use if you update image url)</button>
           <button onClick={triggerSave} disabled={!imageCanDownload}>
             Save Canvas
           </button>
+          {imageDownloadUrl ? (
+            <a href={imageDownloadUrl} download>
+              Download
+            </a>
+          ) : null}
         </div>
         <FramedDiv>
           <canvas {...getCanvasProps()} />
@@ -87,8 +91,7 @@ stories.add('with image', () => (
 
 class WithFileInputDemo extends React.Component {
   state = {
-    image: null,
-    savedImage: null
+    image: null
   };
 
   handleFileInputChange = ev => {
@@ -104,15 +107,8 @@ class WithFileInputDemo extends React.Component {
     }
   };
 
-  handleSave = blob => {
-    const url = fileToUrl(blob);
-    this.setState({
-      savedImage: url
-    });
-  };
-
   render() {
-    const { width, height, color, lineWidth, lineCap, lineJoin } = this.props;
+    const { width, height, color, lineWidth, lineCap, lineJoin, onSave } = this.props;
 
     return this.state.image ? (
       <ReactPainter
@@ -122,16 +118,16 @@ class WithFileInputDemo extends React.Component {
         lineWidth={lineWidth}
         lineCap={lineCap}
         lineJoin={lineJoin}
-        onSave={this.handleSave}
+        onSave={onSave}
         image={this.state.image}
-        render={({ triggerSave, getCanvasProps }) => (
+        render={({ triggerSave, getCanvasProps, imageDownloadUrl }) => (
           <div style={styles.root}>
             <div>
               <button onClick={forceReRender}>Rerender (To choose another file)</button>
               <button onClick={triggerSave}>Save Canvas</button>
             </div>
-            {this.state.savedImage !== null ? (
-              <a href={this.state.savedImage} download>
+            {imageDownloadUrl ? (
+              <a href={imageDownloadUrl} download>
                 Download
               </a>
             ) : null}
@@ -152,6 +148,7 @@ stories.add('with file input', () => (
     width={number('width', 300)}
     height={number('height', 300)}
     color={color('color', '#000')}
+    onSave={action('canvas saved!')}
     lineWidth={number('lineWidth', 5)}
     lineCap={selectV2('lineCap', lineCapOptions, 'round')}
     lineJoin={selectV2('lineJoin', lineJoinOptions, 'round')}

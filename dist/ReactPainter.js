@@ -30,6 +30,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var PropTypes = require("prop-types");
 var React = require("react");
 var util_1 = require("./util");
+// disable touchAction, else the draw on canvas would not work
+// because window would scroll instead of draw on it
 var setUpForCanvas = function () {
     document.body.style.touchAction = 'none';
 };
@@ -48,7 +50,8 @@ var ReactPainter = /** @class */ (function (_super) {
         _this.state = {
             canvasHeight: 0,
             canvasWidth: 0,
-            imageCanDownload: false,
+            imageCanDownload: null,
+            imageDownloadUrl: null,
             isDrawing: false
         };
         _this.extractOffSetFromEvent = function (e) {
@@ -135,7 +138,12 @@ var ReactPainter = /** @class */ (function (_super) {
         _this.handleSave = function () {
             var onSave = _this.props.onSave;
             util_1.canvasToBlob(_this.canvasRef, 'image/png')
-                .then(function (blob) { return onSave(blob); })
+                .then(function (blob) {
+                onSave(blob);
+                _this.setState({
+                    imageDownloadUrl: util_1.fileToUrl(blob)
+                });
+            })
                 .catch(function (err) { return console.error('in ReactPainter handleSave', err); });
         };
         _this.getCanvasProps = function (props) {
@@ -158,9 +166,10 @@ var ReactPainter = /** @class */ (function (_super) {
                 _this.ctx.drawImage(img_1, 0, 0, img_1.naturalWidth, img_1.naturalHeight);
             };
             if (typeof image === 'string') {
-                util_1.checkImageCrossOriginAllowed(image).then(function (result) {
-                    if (result) {
-                        img_1.crossOrigin = 'anonymous';
+                util_1.checkImageCrossOriginAllowed(image).then(function (_a) {
+                    var anonymous = _a.anonymous, withCredentials = _a.withCredentials;
+                    if (anonymous || withCredentials) {
+                        img_1.crossOrigin = anonymous ? 'anonymous' : 'use-credentials';
                         img_1.src = image;
                         _this.setState({
                             imageCanDownload: true
@@ -187,15 +196,18 @@ var ReactPainter = /** @class */ (function (_super) {
     };
     ReactPainter.prototype.componentWillUnmount = function () {
         cleanUpCanvas();
+        util_1.revokeUrl(this.state.imageDownloadUrl);
     };
     ReactPainter.prototype.render = function () {
         var render = this.props.render;
+        var _a = this.state, imageCanDownload = _a.imageCanDownload, imageDownloadUrl = _a.imageDownloadUrl;
         var canvasNode = React.createElement("canvas", __assign({}, this.getCanvasProps()));
         return typeof render === 'function'
             ? render({
                 canvas: canvasNode,
                 getCanvasProps: this.getCanvasProps,
-                imageCanDownload: this.state.imageCanDownload,
+                imageCanDownload: imageCanDownload,
+                imageDownloadUrl: imageDownloadUrl,
                 triggerSave: this.handleSave
             })
             : canvasNode;

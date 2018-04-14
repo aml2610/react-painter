@@ -22,6 +22,7 @@ export interface RenderProps {
     triggerSave: () => void;
     getCanvasProps: (props: PropsGetterInput) => PropsGetterResult;
     imageCanDownload: boolean;
+    imageDownloadUrl: string;
 }
 export interface ReactPainterProps {
     height?: number;
@@ -34,7 +35,14 @@ export interface ReactPainterProps {
     image?: File | string;
     render?: (props: RenderProps) => JSX.Element;
 }
-export declare class ReactPainter extends React.Component<ReactPainterProps> {
+export interface PainterState {
+    canvasHeight: number;
+    canvasWidth: number;
+    imageCanDownload: boolean;
+    imageDownloadUrl: string;
+    isDrawing: boolean;
+}
+export declare class ReactPainter extends React.Component<ReactPainterProps, PainterState> {
     static propTypes: {
         color: PropTypes.Requireable<any>;
         height: PropTypes.Requireable<any>;
@@ -52,12 +60,7 @@ export declare class ReactPainter extends React.Component<ReactPainterProps> {
     lastX: number;
     lastY: number;
     scalingFactor: number;
-    state: {
-        canvasHeight: number;
-        canvasWidth: number;
-        imageCanDownload: boolean;
-        isDrawing: boolean;
-    };
+    state: PainterState;
     extractOffSetFromEvent: (e: React.SyntheticEvent<HTMLCanvasElement>) => {
         offsetX: number;
         offsetY: number;

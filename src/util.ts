@@ -5,29 +5,50 @@ export function dataUrlToArrayBuffer(dataURI: string): [string, ArrayBuffer] {
   for (let i = 0; i < byteString.length; i++) {
     ia[i] = byteString.charCodeAt(i);
   }
-  return [type, ia.buffer]; // potential bug
+  return [type, ia.buffer];
 }
 
-export const checkImageCrossOriginAllowed = (imageUrl: string): Promise<boolean> =>
+export const checkImageCrossOriginAllowed = (
+  imageUrl: string
+): Promise<{ anonymous: boolean; withCredentials: boolean }> =>
   new Promise(resolve => {
-    try {
-      fetch(imageUrl, {
-        method: 'HEAD'
-      })
-        .then(() => resolve(true))
-        .catch(() => resolve(false));
-    } catch (e) {
-      resolve(false);
-    }
+    Promise.all(
+      // have to map, else Promise.all would fail if any request fail
+      [makeAjaxHeadRequest(imageUrl), makeAjaxHeadRequest(imageUrl, true)].map(promise =>
+        promise
+          .then(result => ({ result, success: true }))
+          .catch(error => ({ error, success: false }))
+      )
+    )
+      .then(results =>
+        resolve({
+          anonymous: results[0].success,
+          withCredentials: results[1].success
+        })
+      )
+      .catch(() =>
+        resolve({
+          anonymous: false,
+          withCredentials: false
+        })
+      );
   });
 
-export function fileToUrl(file: File): string {
+export function fileToUrl(file: File | Blob): string {
   const url = window.URL || (window as any).webkitURL;
 
   try {
     return url.createObjectURL(file);
   } catch (e) {
     return '';
+  }
+}
+
+export function revokeUrl(objectUrl: string): void {
+  try {
+    window.URL.revokeObjectURL(objectUrl);
+  } catch (e) {
+    // fail silently because they is no major disruption to user exp
   }
 }
 
@@ -46,3 +67,35 @@ type AnyFunction = (...params: any[]) => any;
 
 export const composeFn = (...fns: AnyFunction[]) => (...args: any[]) =>
   fns.forEach(fn => fn && fn(...args));
+
+export const makeAjaxHeadRequest = (
+  url: string,
+  withCredentials: boolean = false
+): Promise<any> =>
+  new Promise((resolve, reject) => {
+    try {
+      const request = new XMLHttpRequest();
+      request.open('HEAD', url);
+
+      request.timeout = 1000;
+
+      request.withCredentials = withCredentials;
+
+      request.onreadystatechange = () => {
+        if (request.readyState === 4) {
+          if (request.status === 200) {
+            resolve(request.response);
+          } else {
+            reject(request.response);
+          }
+        }
+      };
+
+      request.ontimeout = () => {
+        reject('Timeout');
+      };
+      request.send();
+    } catch (e) {
+      reject(e);
+    }
+  });
