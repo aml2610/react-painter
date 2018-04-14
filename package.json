@@ -1,6 +1,6 @@
 {
   "name": "react-painter",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "A react component for drawing in canvas",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
