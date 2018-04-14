@@ -8,9 +8,6 @@ cache:
 script:
 - yarn test
 - yarn build
-branches:
-  only:
-  - master
 deploy:
   provider: npm
   on:
