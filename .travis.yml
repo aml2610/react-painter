@@ -11,3 +11,12 @@ script:
 branches:
   only:
   - master
+deploy:
+  provider: npm
+  on:
+    tags: true
+    branch: master
+  email: malcolm.keeweesiong@gmail.com
+  api_key:
+    secure: p+39vFv4DhIS1MIohWu+R1oVHZWo9vSzvRLJDsedw+PPX/zMOyZHV1TAzAomQn3iSFIxeGZpPtKfzbH5UU/2gigw5CaSz74Qa4LiZ6pFAYAYRw/3K+OCnAgLjveC2HMQGRfsDuIsrK13us7QwPIKWOQ7Y7ygUmLdVxpK/gCSnGmh3iUBTyTTD414REVIcwee8fVfbNr2z8JjQiSstq746hoOqQ74/DpNvgKa3M+E70AdwshqpU0tWMocnBX4/yT+zxzlZSz7fmvCZVDGDXofM9UP0KJZQ9JeZwyNZjUfW5dbZpO6E4MSQvRrKnsT5QmTCJrsELReIcIfMhVCaQiBmUac+piShPiTrzDdHdZOonYnvEh0yHdaCs+UApqL3QeVtfI+aIfeTk0O3kwx5FBlEApYIaz6+obfOCHvFTwswrnmIEBrZsE3Wc0I52Td3HspTn30Tv9Pyc/DFwcgMY6Sg3PzjlgI/f6UPKfFN95n2fajyCJWFrVmbAuzjBly6H/WLWKjF0wOSEJiVxSbm4Pn6EJwtO70r5Q2v1xWpJyjuq3Z7+arjsTb1+0kzLae8o9IfRruvLr8xOUkYmatHWhY7nt60WxqgScwLR9pZF0jhC+O+8ADKBEyOnjvAY1ML50einBXLSBbPzsk0cYXm4f1XtjHjfvhd/QgxDEFVlMVNYw=
+  skip_cleanup: true
