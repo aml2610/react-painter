@@ -218,7 +218,7 @@ Example:
 <ReactPainter
   render={({ canvas, triggerSave, setLineCap }) => (
     <div>
-      <h2>Awesome heading</h2>
+      <div>Awesome heading</div>
       <select onChange={e => setLineCap(e.target.value)}>
         <option value="round">round</option>
         <option value="butt">butt</option>
