@@ -1,6 +1,8 @@
 /// <reference types="react" />
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
+export declare type LineJoinType = 'round' | 'bevel' | 'miter';
+export declare type LineCapType = 'round' | 'butt' | 'square';
 export interface CanvasProps {
     onMouseDown: React.MouseEventHandler<HTMLCanvasElement>;
     onTouchStart: React.TouchEventHandler<HTMLCanvasElement>;
@@ -25,16 +27,16 @@ export interface RenderProps {
     imageDownloadUrl: string;
     setColor: (color: string) => void;
     setLineWidth: (width: number) => void;
-    setLineJoin: (type: 'round' | 'bevel' | 'miter') => void;
-    setLineCap: (type: 'round' | 'butt' | 'square') => void;
+    setLineJoin: (type: LineJoinType) => void;
+    setLineCap: (type: LineCapType) => void;
 }
 export interface ReactPainterProps {
     height?: number;
     width?: number;
     initialColor?: string;
     initialLineWidth?: number;
-    initialLineJoin?: 'round' | 'bevel' | 'miter';
-    initialLineCap?: 'round' | 'butt' | 'square';
+    initialLineJoin?: LineJoinType;
+    initialLineCap?: LineCapType;
     onSave?: (blob: Blob) => void;
     image?: File | string;
     render?: (props: RenderProps) => JSX.Element;
@@ -47,8 +49,8 @@ export interface PainterState {
     isDrawing: boolean;
     color: string;
     lineWidth: number;
-    lineJoin: 'round' | 'bevel' | 'miter';
-    lineCap: 'round' | 'butt' | 'square';
+    lineJoin: LineJoinType;
+    lineCap: LineCapType;
 }
 export declare class ReactPainter extends React.Component<ReactPainterProps, PainterState> {
     static propTypes: {
@@ -81,8 +83,8 @@ export declare class ReactPainter extends React.Component<ReactPainterProps, Pai
     handleSave: () => void;
     handleSetColor: (color: string) => void;
     handleSetLineWidth: (lineWidth: number) => void;
-    handleSetLineJoin: (type: "round" | "bevel" | "miter") => void;
-    handleSetLineCap: (type: "square" | "round" | "butt") => void;
+    handleSetLineJoin: (type: LineJoinType) => void;
+    handleSetLineCap: (type: LineCapType) => void;
     getCanvasProps: (props?: PropsGetterInput) => PropsGetterResult;
     componentDidMount(): void;
     componentWillUnmount(): void;

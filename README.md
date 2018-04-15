@@ -200,7 +200,7 @@ Example:
         <option value="round">round</option>
         <option value="bevel">bevel</option>
         <option value="miter">miter</option>
-      </selct>
+      </select>
       <div className="awesomeContainer">{canvas}</div>
       <button onClick={triggerSave}>Save</button>
     </div>
@@ -223,7 +223,7 @@ Example:
         <option value="round">round</option>
         <option value="butt">butt</option>
         <option value="square">square</option>
-      </selct>
+      </select>
       <div className="awesomeContainer">{canvas}</div>
       <button onClick={triggerSave}>Save</button>
     </div>
