@@ -17,7 +17,11 @@
     "type": "git",
     "url": "git+https://github.com/malcolm-kee/react-painter.git"
   },
-  "keywords": ["react", "canvas", "drawing"],
+  "keywords": [
+    "react",
+    "canvas",
+    "drawing"
+  ],
   "author": {
     "name": "Malcolm Kee",
     "email": "malcolm.keeweesiong@gmail.com"
@@ -42,6 +46,7 @@
     "@types/prop-types": "^15.5.2",
     "@types/react": "^16.3.5",
     "@types/react-dom": "^16.0.4",
+    "awesome-typescript-loader": "4.0.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
@@ -78,8 +83,20 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "test/.*.(tsx?|jsx?)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
-    "collectCoverageFrom": ["src/**/*.tsx", "src/**/*.ts"],
-    "coverageReporters": ["text-summary"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.tsx",
+      "src/**/*.ts"
+    ],
+    "coverageReporters": [
+      "text-summary"
+    ]
   }
 }
