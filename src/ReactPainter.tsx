@@ -18,6 +18,9 @@ const cleanUpCanvas = () => {
   document.body.style.touchAction = null;
 };
 
+export type LineJoinType = 'round' | 'bevel' | 'miter';
+export type LineCapType = 'round' | 'butt' | 'square';
+
 export interface CanvasProps {
   onMouseDown: React.MouseEventHandler<HTMLCanvasElement>;
   onTouchStart: React.TouchEventHandler<HTMLCanvasElement>;
@@ -43,15 +46,19 @@ export interface RenderProps {
   getCanvasProps: (props: PropsGetterInput) => PropsGetterResult;
   imageCanDownload: boolean;
   imageDownloadUrl: string;
+  setColor: (color: string) => void;
+  setLineWidth: (width: number) => void;
+  setLineJoin: (type: LineJoinType) => void;
+  setLineCap: (type: LineCapType) => void;
 }
 
 export interface ReactPainterProps {
   height?: number;
   width?: number;
-  color?: string;
-  lineWidth?: number;
-  lineJoin?: 'round' | 'bevel' | 'miter';
-  lineCap?: 'round' | 'butt' | 'square';
+  initialColor?: string;
+  initialLineWidth?: number;
+  initialLineJoin?: LineJoinType;
+  initialLineCap?: LineCapType;
   onSave?: (blob: Blob) => void;
   image?: File | string;
   render?: (props: RenderProps) => JSX.Element;
@@ -63,6 +70,10 @@ export interface PainterState {
   imageCanDownload: boolean;
   imageDownloadUrl: string;
   isDrawing: boolean;
+  color: string;
+  lineWidth: number;
+  lineJoin: LineJoinType;
+  lineCap: LineCapType;
 }
 
 export class ReactPainter extends React.Component<ReactPainterProps, PainterState> {
@@ -79,15 +90,15 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   };
 
   static defaultProps: Partial<ReactPainterProps> = {
-    color: '#000',
     height: 300,
     image: undefined,
-    lineCap: 'round',
-    lineJoin: 'round',
-    lineWidth: 5,
     onSave() {
       // noop
     },
+    initialColor: '#000',
+    initialLineCap: 'round',
+    initialLineJoin: 'round',
+    initialLineWidth: 5,
     width: 300
   };
 
@@ -100,9 +111,13 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   state: PainterState = {
     canvasHeight: 0,
     canvasWidth: 0,
+    color: this.props.initialColor,
     imageCanDownload: null,
     imageDownloadUrl: null,
-    isDrawing: false
+    isDrawing: false,
+    lineCap: this.props.initialLineCap,
+    lineJoin: this.props.initialLineJoin,
+    lineWidth: this.props.initialLineWidth
   };
 
   extractOffSetFromEvent = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
@@ -146,7 +161,7 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
         canvasWidth: width
       });
     }
-    const { color, lineWidth, lineJoin, lineCap } = this.props;
+    const { color, lineWidth, lineJoin, lineCap } = this.state;
     this.ctx = this.canvasRef.getContext('2d');
     this.ctx.strokeStyle = color;
     this.ctx.lineWidth = lineWidth * this.scalingFactor;
@@ -178,7 +193,7 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   };
 
   handleMouseMove = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
-    const { color, lineWidth, lineCap, lineJoin } = this.props;
+    const { color, lineWidth, lineCap, lineJoin } = this.state;
     if (this.state.isDrawing) {
       const { offsetX, offsetY } = this.extractOffSetFromEvent(e);
       const ctx = this.ctx;
@@ -213,6 +228,30 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
         });
       })
       .catch(err => console.error('in ReactPainter handleSave', err));
+  };
+
+  handleSetColor = (color: string) => {
+    this.setState({
+      color
+    });
+  };
+
+  handleSetLineWidth = (lineWidth: number) => {
+    this.setState({
+      lineWidth
+    });
+  };
+
+  handleSetLineJoin = (type: 'round' | 'bevel' | 'miter') => {
+    this.setState({
+      lineJoin: type
+    });
+  };
+
+  handleSetLineCap = (type: 'round' | 'butt' | 'square') => {
+    this.setState({
+      lineCap: type
+    });
   };
 
   getCanvasProps = (props: PropsGetterInput = {}): PropsGetterResult => {
@@ -296,6 +335,10 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
           getCanvasProps: this.getCanvasProps,
           imageCanDownload,
           imageDownloadUrl,
+          setColor: this.handleSetColor,
+          setLineCap: this.handleSetLineCap,
+          setLineJoin: this.handleSetLineJoin,
+          setLineWidth: this.handleSetLineWidth,
           triggerSave: this.handleSave
         })
       : canvasNode;

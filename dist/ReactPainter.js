@@ -50,9 +50,13 @@ var ReactPainter = /** @class */ (function (_super) {
         _this.state = {
             canvasHeight: 0,
             canvasWidth: 0,
+            color: _this.props.initialColor,
             imageCanDownload: null,
             imageDownloadUrl: null,
-            isDrawing: false
+            isDrawing: false,
+            lineCap: _this.props.initialLineCap,
+            lineJoin: _this.props.initialLineJoin,
+            lineWidth: _this.props.initialLineWidth
         };
         _this.extractOffSetFromEvent = function (e) {
             var _a = e.nativeEvent, offsetX = _a.offsetX, offsetY = _a.offsetY, touches = _a.touches;
@@ -89,7 +93,7 @@ var ReactPainter = /** @class */ (function (_super) {
                     canvasWidth: width
                 });
             }
-            var _b = _this.props, color = _b.color, lineWidth = _b.lineWidth, lineJoin = _b.lineJoin, lineCap = _b.lineCap;
+            var _b = _this.state, color = _b.color, lineWidth = _b.lineWidth, lineJoin = _b.lineJoin, lineCap = _b.lineCap;
             _this.ctx = _this.canvasRef.getContext('2d');
             _this.ctx.strokeStyle = color;
             _this.ctx.lineWidth = lineWidth * _this.scalingFactor;
@@ -112,7 +116,7 @@ var ReactPainter = /** @class */ (function (_super) {
             });
         };
         _this.handleMouseMove = function (e) {
-            var _a = _this.props, color = _a.color, lineWidth = _a.lineWidth, lineCap = _a.lineCap, lineJoin = _a.lineJoin;
+            var _a = _this.state, color = _a.color, lineWidth = _a.lineWidth, lineCap = _a.lineCap, lineJoin = _a.lineJoin;
             if (_this.state.isDrawing) {
                 var _b = _this.extractOffSetFromEvent(e), offsetX = _b.offsetX, offsetY = _b.offsetY;
                 var ctx = _this.ctx;
@@ -145,6 +149,26 @@ var ReactPainter = /** @class */ (function (_super) {
                 });
             })
                 .catch(function (err) { return console.error('in ReactPainter handleSave', err); });
+        };
+        _this.handleSetColor = function (color) {
+            _this.setState({
+                color: color
+            });
+        };
+        _this.handleSetLineWidth = function (lineWidth) {
+            _this.setState({
+                lineWidth: lineWidth
+            });
+        };
+        _this.handleSetLineJoin = function (type) {
+            _this.setState({
+                lineJoin: type
+            });
+        };
+        _this.handleSetLineCap = function (type) {
+            _this.setState({
+                lineCap: type
+            });
         };
         _this.getCanvasProps = function (props) {
             if (props === void 0) { props = {}; }
@@ -208,6 +232,10 @@ var ReactPainter = /** @class */ (function (_super) {
                 getCanvasProps: this.getCanvasProps,
                 imageCanDownload: imageCanDownload,
                 imageDownloadUrl: imageDownloadUrl,
+                setColor: this.handleSetColor,
+                setLineCap: this.handleSetLineCap,
+                setLineJoin: this.handleSetLineJoin,
+                setLineWidth: this.handleSetLineWidth,
                 triggerSave: this.handleSave
             })
             : canvasNode;
@@ -224,15 +252,15 @@ var ReactPainter = /** @class */ (function (_super) {
         width: PropTypes.number
     };
     ReactPainter.defaultProps = {
-        color: '#000',
         height: 300,
         image: undefined,
-        lineCap: 'round',
-        lineJoin: 'round',
-        lineWidth: 5,
         onSave: function () {
             // noop
         },
+        initialColor: '#000',
+        initialLineCap: 'round',
+        initialLineJoin: 'round',
+        initialLineWidth: 5,
         width: 300
     };
     return ReactPainter;

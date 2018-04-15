@@ -2,32 +2,13 @@ import React from 'react';
 
 import { storiesOf, forceReRender } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import {
-  withKnobs,
-  color,
-  number,
-  text,
-  button,
-  selectV2
-} from '@storybook/addon-knobs/react';
+import { withKnobs, number, text, button } from '@storybook/addon-knobs/react';
 import { ReactPainter } from '../dist';
 import { FramedDiv } from './storybookComponent';
 
 const stories = storiesOf('ReactPainter', module);
 
 stories.addDecorator(withKnobs);
-
-const lineCapOptions = {
-  round: 'round',
-  butt: 'butt',
-  square: 'square'
-};
-
-const lineJoinOptions = {
-  round: 'round',
-  bevel: 'bevel',
-  miter: 'miter'
-};
 
 const styles = {
   root: {
@@ -41,16 +22,66 @@ stories.add('basic', () => (
   <ReactPainter
     width={number('width', 300)}
     height={number('height', 300)}
-    color={color('color', '#000')}
-    lineWidth={number('lineWidth', 5)}
-    lineCap={selectV2('lineCap', lineCapOptions, 'round')}
-    lineJoin={selectV2('lineJoin', lineJoinOptions, 'round')}
     onSave={action('canvas saved!')}
     render={({ triggerSave, canvas }) => (
       <div style={styles.root}>
         <div>
-          <button onClick={forceReRender}>Clear</button>
+          <button onClick={forceReRender}>Restart</button>
           <button onClick={triggerSave}>Save Canvas</button>
+        </div>
+        <FramedDiv>{canvas}</FramedDiv>
+      </div>
+    )}
+  />
+));
+
+stories.add('with all controls', () => (
+  <ReactPainter
+    width={number('width', 300)}
+    height={number('height', 300)}
+    onSave={action('canvas saved!')}
+    render={({
+      canvas,
+      triggerSave,
+      imageCanDownload,
+      imageDownloadUrl,
+      setColor,
+      setLineJoin,
+      setLineWidth,
+      setLineCap
+    }) => (
+      <div style={styles.root}>
+        <div>
+          <button onClick={forceReRender}>
+            Rerender (if you want to update canvas size)
+          </button>
+          <button onClick={triggerSave}>Save Canvas</button>
+          <label for="line-color">Color</label>
+          <input type="color" id="line-color" onChange={e => setColor(e.target.value)} />
+          <label for="line-width">Width</label>
+          <input
+            type="number"
+            id="line-width"
+            defaultValue={5}
+            onChange={e => setLineWidth(e.target.value)}
+          />
+          <label for="line-cap">Line Cap</label>
+          <select id="line-cap" onChange={e => setLineCap(e.target.value)}>
+            <option value="round">round</option>
+            <option value="butt">butt</option>
+            <option value="square">square</option>
+          </select>
+          <label for="line-join">Line Join</label>
+          <select id="line-join" onChange={e => setLineJoin(e.target.value)}>
+            <option value="round">round</option>
+            <option value="bevel">bevel</option>
+            <option value="miter">miter</option>
+          </select>
+          {imageDownloadUrl ? (
+            <a href={imageDownloadUrl} download>
+              Download
+            </a>
+          ) : null}
         </div>
         <FramedDiv>{canvas}</FramedDiv>
       </div>
@@ -62,13 +93,16 @@ stories.add('with image', () => (
   <ReactPainter
     width={number('width', 300)}
     height={number('height', 300)}
-    color={color('color', '#000')}
-    lineWidth={number('lineWidth', 5)}
-    lineCap={selectV2('lineCap', lineCapOptions, 'round')}
-    lineJoin={selectV2('lineJoin', lineJoinOptions, 'round')}
     onSave={action('canvas saved!')}
     image={text('image url', 'https://picsum.photos/200/300')}
-    render={({ triggerSave, getCanvasProps, imageCanDownload, imageDownloadUrl }) => (
+    render={({
+      triggerSave,
+      getCanvasProps,
+      imageCanDownload,
+      imageDownloadUrl,
+      setColor,
+      setLineWidth
+    }) => (
       <div style={styles.root}>
         <div>
           <button onClick={forceReRender}>Rerender (Use if you update image url)</button>
@@ -108,16 +142,12 @@ class WithFileInputDemo extends React.Component {
   };
 
   render() {
-    const { width, height, color, lineWidth, lineCap, lineJoin, onSave } = this.props;
+    const { width, height, onSave } = this.props;
 
     return this.state.image ? (
       <ReactPainter
         width={width}
         height={height}
-        color={color}
-        lineWidth={lineWidth}
-        lineCap={lineCap}
-        lineJoin={lineJoin}
         onSave={onSave}
         image={this.state.image}
         render={({ triggerSave, getCanvasProps, imageDownloadUrl }) => (
@@ -147,10 +177,6 @@ stories.add('with file input', () => (
   <WithFileInputDemo
     width={number('width', 300)}
     height={number('height', 300)}
-    color={color('color', '#000')}
     onSave={action('canvas saved!')}
-    lineWidth={number('lineWidth', 5)}
-    lineCap={selectV2('lineCap', lineCapOptions, 'round')}
-    lineJoin={selectV2('lineJoin', lineJoinOptions, 'round')}
   />
 ));

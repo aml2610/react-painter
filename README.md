@@ -65,33 +65,33 @@ This value should not be changed after ReactPainter is mounted as it will mess u
 Set the width of the canvas
 Similar to height, this value should not be changed after mounted.
 
-### color?: string
+### initialColor?: string
 
 > defaults to `#000`
 
-Set the stroke color.
-This value can be changed dynamically.
+Set the initial stroke color.
+Stroke can be changed dynamically using `setColor`.
 
-### lineWidth?: number
+### initialLineWidth?: number
 
 > defaults to `5`
 
-Set the stroke line width.
-This value can be changed dynamically.
+Set the initial stroke line width.
+Line width can be changed dynamically using `setLineWidth`.
 
 ### lineCap?: 'round' | 'butt' | 'square'
 
 > defaults to `round`
 
-Set the stroke line cap.
-This value can be changed dynamically.
+Set the initial stroke line cap.
+Line cap can be changed dynamically using `setLineCap`.
 
-### lineJoin?: 'round' | 'bevel' | 'miter'
+### initialLineJoin?: 'round' | 'bevel' | 'miter'
 
 > defaults to `round`
 
-Set the stroke line join.
-This value can be changed dynamically.
+Set the initial stroke line join.
+Line join type can be changed dynamically using `setLineJoin`.
 
 ### onSave?: (blob: Blob) => void
 
@@ -129,7 +129,7 @@ This is the canvas node that you can used to mount in your component. Example:
 />
 ```
 
-### triggerSave: () => void;
+### triggerSave: () => void
 
 This is the function that you invoke when you want to save the canvas.
 
@@ -147,7 +147,91 @@ Example:
 />
 ```
 
-### imageCanDownload: boolean;
+### setColor: (color: string) => void
+
+Set the color of the line.
+
+Example:
+
+```jsx
+<ReactPainter
+  render={({ canvas, triggerSave, setColor }) => (
+    <div>
+      <div>Awesome heading</div>
+      <input type="color" onChange={e => setColor(e.target.value)} />
+      <div className="awesomeContainer">{canvas}</div>
+      <button onClick={triggerSave}>Save</button>
+    </div>
+  )}
+/>
+```
+
+### setLineWidth: (width: number) => void
+
+Set the width of the line.
+
+Example:
+
+```jsx
+<ReactPainter
+  render={({ canvas, triggerSave, setLineWidth }) => (
+    <div>
+      <div>Awesome heading</div>
+      <input type="number" onChange={e => setLineWidth(e.target.value)} />
+      <div className="awesomeContainer">{canvas}</div>
+      <button onClick={triggerSave}>Save</button>
+    </div>
+  )}
+/>
+```
+
+### setLineJoin: (type: 'round' | 'bevel' | 'miter') => void
+
+Set the join type of the line.
+
+Example:
+
+```jsx
+<ReactPainter
+  render={({ canvas, triggerSave, setLineJoin }) => (
+    <div>
+      <div>Awesome heading</div>
+      <select onChange={e => setLineJoin(e.target.value)}>
+        <option value="round">round</option>
+        <option value="bevel">bevel</option>
+        <option value="miter">miter</option>
+      </selct>
+      <div className="awesomeContainer">{canvas}</div>
+      <button onClick={triggerSave}>Save</button>
+    </div>
+  )}
+/>
+```
+
+### setLineCap: (type: 'round' | 'butt' | 'square') => void
+
+Set the cap type of the line.
+
+Example:
+
+```jsx
+<ReactPainter
+  render={({ canvas, triggerSave, setLineCap }) => (
+    <div>
+      <h2>Awesome heading</h2>
+      <select onChange={e => setLineCap(e.target.value)}>
+        <option value="round">round</option>
+        <option value="butt">butt</option>
+        <option value="square">square</option>
+      </selct>
+      <div className="awesomeContainer">{canvas}</div>
+      <button onClick={triggerSave}>Save</button>
+    </div>
+  )}
+/>
+```
+
+### imageCanDownload: boolean
 
 This properties let you know if the image is inserted successfully. By default it is `null` until the checking of image import is successful.
 

@@ -23,14 +23,18 @@ export interface RenderProps {
     getCanvasProps: (props: PropsGetterInput) => PropsGetterResult;
     imageCanDownload: boolean;
     imageDownloadUrl: string;
+    setColor: (color: string) => void;
+    setLineWidth: (width: number) => void;
+    setLineJoin: (type: 'round' | 'bevel' | 'miter') => void;
+    setLineCap: (type: 'round' | 'butt' | 'square') => void;
 }
 export interface ReactPainterProps {
     height?: number;
     width?: number;
-    color?: string;
-    lineWidth?: number;
-    lineJoin?: 'round' | 'bevel' | 'miter';
-    lineCap?: 'round' | 'butt' | 'square';
+    initialColor?: string;
+    initialLineWidth?: number;
+    initialLineJoin?: 'round' | 'bevel' | 'miter';
+    initialLineCap?: 'round' | 'butt' | 'square';
     onSave?: (blob: Blob) => void;
     image?: File | string;
     render?: (props: RenderProps) => JSX.Element;
@@ -41,6 +45,10 @@ export interface PainterState {
     imageCanDownload: boolean;
     imageDownloadUrl: string;
     isDrawing: boolean;
+    color: string;
+    lineWidth: number;
+    lineJoin: 'round' | 'bevel' | 'miter';
+    lineCap: 'round' | 'butt' | 'square';
 }
 export declare class ReactPainter extends React.Component<ReactPainterProps, PainterState> {
     static propTypes: {
@@ -71,6 +79,10 @@ export declare class ReactPainter extends React.Component<ReactPainterProps, Pai
     handleMouseMove: (e: React.SyntheticEvent<HTMLCanvasElement>) => void;
     handleMouseUp: (e: React.SyntheticEvent<HTMLCanvasElement>) => void;
     handleSave: () => void;
+    handleSetColor: (color: string) => void;
+    handleSetLineWidth: (lineWidth: number) => void;
+    handleSetLineJoin: (type: "round" | "bevel" | "miter") => void;
+    handleSetLineCap: (type: "square" | "round" | "butt") => void;
     getCanvasProps: (props?: PropsGetterInput) => PropsGetterResult;
     componentDidMount(): void;
     componentWillUnmount(): void;
