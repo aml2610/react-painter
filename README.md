@@ -2,6 +2,7 @@
 
 [![version](https://img.shields.io/npm/v/react-painter.svg)](https://www.npmjs.com/package/react-painter)
 ![license](https://img.shields.io/npm/l/react-painter.svg)
+![build](https://travis-ci.org/malcolm-kee/react-painter.svg?branch=master)
 
 [DEMO](https://malcolm-kee.github.io/react-painter/)
 
