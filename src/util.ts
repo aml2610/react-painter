@@ -63,6 +63,43 @@ export const canvasToBlob = (canvas: HTMLCanvasElement, type: string): Promise<B
     }
   });
 
+export interface ImportImageResponse {
+  img: HTMLImageElement | ImageBitmap;
+  imgWidth: number;
+  imgHeight: number;
+}
+
+export const importImage = (image: string | File): Promise<ImportImageResponse> =>
+  new Promise((resolve, reject) => {
+    if (typeof image === 'string') {
+      const img = new Image();
+      img.onload = () => {
+        resolve({ img, imgWidth: img.naturalWidth, imgHeight: img.naturalHeight });
+      };
+      checkImageCrossOriginAllowed(image).then(({ anonymous, withCredentials }) => {
+        if (anonymous || withCredentials) {
+          img.crossOrigin = anonymous ? 'anonymous' : 'use-credentials';
+          img.src = image;
+        } else {
+          reject();
+        }
+      });
+    } else {
+      if ('createImageBitmap' in window) {
+        window
+          .createImageBitmap(image)
+          .then(img => resolve({ img, imgWidth: img.width, imgHeight: img.height }))
+          .catch(err => reject(err));
+      } else {
+        const img = new Image();
+        img.onload = () => {
+          resolve({ img, imgWidth: img.naturalWidth, imgHeight: img.naturalHeight });
+        };
+        img.src = fileToUrl(image);
+      }
+    }
+  });
+
 type AnyFunction = (...params: any[]) => any;
 
 export const composeFn = (...fns: AnyFunction[]) => (...args: any[]) =>

@@ -1,12 +1,6 @@
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import {
-  canvasToBlob,
-  checkImageCrossOriginAllowed,
-  composeFn,
-  fileToUrl,
-  revokeUrl
-} from './util';
+import { canvasToBlob, composeFn, fileToUrl, importImage, revokeUrl } from './util';
 
 // disable touchAction, else the draw on canvas would not work
 // because window would scroll instead of draw on it
@@ -138,16 +132,21 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     };
   };
 
-  initializeCanvas = (width: number, height: number, image?: HTMLImageElement) => {
-    if (image) {
+  initializeCanvas = (
+    width: number,
+    height: number,
+    imgWidth?: number,
+    imgHeight?: number
+  ) => {
+    if (imgWidth && imgHeight) {
       const [cvWidth, cvHeight, scalingRatio] = this.getDrawImageCanvasSize(
         width,
         height,
-        image.naturalWidth,
-        image.naturalHeight
+        imgWidth,
+        imgHeight
       );
-      this.canvasRef.width = image.naturalWidth;
-      this.canvasRef.height = image.naturalHeight;
+      this.canvasRef.width = imgWidth;
+      this.canvasRef.height = imgHeight;
       this.setState({
         canvasHeight: cvHeight,
         canvasWidth: cvWidth
@@ -289,32 +288,20 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     const { width, height, image } = this.props;
     setUpForCanvas();
     if (image) {
-      const img = new Image();
-      img.onload = () => {
-        this.initializeCanvas(width, height, img);
-        this.ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
-      };
-      if (typeof image === 'string') {
-        checkImageCrossOriginAllowed(image).then(({ anonymous, withCredentials }) => {
-          if (anonymous || withCredentials) {
-            img.crossOrigin = anonymous ? 'anonymous' : 'use-credentials';
-            img.src = image;
-            this.setState({
-              imageCanDownload: true
-            });
-          } else {
-            img.src = '';
-            this.setState({
-              imageCanDownload: false
-            });
-          }
+      importImage(image)
+        .then(({ img, imgWidth, imgHeight }) => {
+          this.initializeCanvas(width, height, imgWidth, imgHeight);
+          this.ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+          this.setState({
+            imageCanDownload: true
+          });
+        })
+        .catch(err => {
+          this.setState({
+            imageCanDownload: false
+          });
+          this.initializeCanvas(width, height);
         });
-      } else {
-        img.src = fileToUrl(image);
-        this.setState({
-          imageCanDownload: true
-        });
-      }
     } else {
       this.initializeCanvas(width, height);
     }

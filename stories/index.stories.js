@@ -56,22 +56,22 @@ stories.add('with all controls', () => (
             Rerender (if you want to update canvas size)
           </button>
           <button onClick={triggerSave}>Save Canvas</button>
-          <label for="line-color">Color</label>
+          <label htmlFor="line-color">Color</label>
           <input type="color" id="line-color" onChange={e => setColor(e.target.value)} />
-          <label for="line-width">Width</label>
+          <label htmlFor="line-width">Width</label>
           <input
             type="number"
             id="line-width"
             defaultValue={5}
             onChange={e => setLineWidth(e.target.value)}
           />
-          <label for="line-cap">Line Cap</label>
+          <label htmlFor="line-cap">Line Cap</label>
           <select id="line-cap" onChange={e => setLineCap(e.target.value)}>
             <option value="round">round</option>
             <option value="butt">butt</option>
             <option value="square">square</option>
           </select>
-          <label for="line-join">Line Join</label>
+          <label htmlFor="line-join">Line Join</label>
           <select id="line-join" onChange={e => setLineJoin(e.target.value)}>
             <option value="round">round</option>
             <option value="bevel">bevel</option>
