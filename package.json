@@ -1,6 +1,6 @@
 {
   "name": "react-painter",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "A react component for drawing in canvas",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,7 +17,11 @@
     "type": "git",
     "url": "git+https://github.com/malcolm-kee/react-painter.git"
   },
-  "keywords": ["react", "canvas", "drawing"],
+  "keywords": [
+    "react",
+    "canvas",
+    "drawing"
+  ],
   "author": {
     "name": "Malcolm Kee",
     "email": "malcolm.keeweesiong@gmail.com"
@@ -82,8 +86,20 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "test/.*.(tsx?|jsx?)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
-    "collectCoverageFrom": ["src/**/*.tsx", "src/**/*.ts"],
-    "coverageReporters": ["text-summary"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.tsx",
+      "src/**/*.ts"
+    ],
+    "coverageReporters": [
+      "text-summary"
+    ]
   }
 }
