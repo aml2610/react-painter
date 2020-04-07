@@ -1,22 +1,22 @@
 # react-painter
 
-![version](https://img.shields.io/npm/v/react-painter.svg)](https://www.npmjs.com/package/react-painter)
+[![version](https://img.shields.io/npm/v/react-painter.svg)](https://www.npmjs.com/package/react-painter)
 ![license](https://img.shields.io/npm/l/react-painter.svg)
 
 [DEMO](https://aml2610.github.io/react-painter/)
 
-<p align="center" style="font-size:1.2rem">0 dependencies React component that can be used to draw with mouse/touch</p>
+<p align="center" style="font-size:1.2rem">0 dependency React component that can be used to draw on a canvas with mouse/touch</p>
 
 <hr />
 
 ## The problem
 
-You want a simple functionality to allow user to write/draw on image/ blank canvas, then save the output to be uploaded to server/locally.
+You want a simple functionality to allow the user to write/draw on image/blank canvas, then save the output to be uploaded to a server/locally.
 
-## This solution
+## The solution
 
-This is a simple component that utilize HTML5 canvas and File API.
-It uses a render prop which gives you maximum flexibility with a minimal API because you are able to extends functionality and render the result as you wish.
+This is a simple component that utilises HTML5 canvases and the File API.
+It uses a render prop which gives you maximum flexibility with a minimal API because you are able to extend functionality and render the result as you wish.
 
 ## Installation
 
