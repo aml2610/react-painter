@@ -1,12 +1,11 @@
 # react-painter
 
-[![version](https://img.shields.io/npm/v/react-painter.svg)](https://www.npmjs.com/package/react-painter)
+![version](https://img.shields.io/npm/v/react-painter.svg)](https://www.npmjs.com/package/react-painter)
 ![license](https://img.shields.io/npm/l/react-painter.svg)
-![build](https://travis-ci.org/malcolm-kee/react-painter.svg?branch=master)
 
-[DEMO](https://malcolm-kee.github.io/react-painter/)
+[DEMO](https://aml2610.github.io/react-painter/)
 
-<p align="center" style="font-size:1.2rem">0 dependencies react component to draw with mouse/touch</p>
+<p align="center" style="font-size:1.2rem">0 dependencies React component that can be used to draw with mouse/touch</p>
 
 <hr />
 
