@@ -115,7 +115,7 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   };
 
   extractOffSetFromEvent = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
-    const { offsetX, offsetY, touches } = e.nativeEvent as any;
+    const { offsetX, offsetY, clientX, clientY } = e.nativeEvent as any;
     if (offsetX && offsetY) {
       return {
         offsetX: offsetX * this.scalingFactor,
@@ -123,8 +123,8 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
       };
     }
     const rect = this.canvasRef.getBoundingClientRect();
-    const x = (touches[0].clientX - rect.left) * this.scalingFactor;
-    const y = (touches[0].clientY - rect.top) * this.scalingFactor;
+    const x = (clientX - rect.left) * this.scalingFactor;
+    const y = (clientY - rect.top) * this.scalingFactor;
 
     return {
       offsetX: x,
