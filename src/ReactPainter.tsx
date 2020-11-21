@@ -115,17 +115,22 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   };
 
   extractOffSetFromEvent = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
-    const { offsetX, offsetY, clientX, clientY } = e.nativeEvent as any;
+    const { offsetX, offsetY, touches, clientX: mouseClientX, clientY: mouseClientY } = e.nativeEvent as any;
+    // If offset coords are directly on the event we use them
     if (offsetX && offsetY) {
       return {
         offsetX: offsetX * this.scalingFactor,
         offsetY: offsetY * this.scalingFactor
       };
     }
+    // Otherwise we need to calculate them themselves
+    // We need to check whether user is using a touch device or just the mouse and extract
+    // the touch/click coords accordingly
+    const clientX = touches && touches.length ? touches[0].clientX : mouseClientX;
+    const clientY = touches && touches.length ? touches[0].clientY : mouseClientY;
     const rect = this.canvasRef.getBoundingClientRect();
     const x = (clientX - rect.left) * this.scalingFactor;
     const y = (clientY - rect.top) * this.scalingFactor;
-
     return {
       offsetX: x,
       offsetY: y
