@@ -1,3 +1,5 @@
+import { fileToUrl } from './objectUrlHelpers';
+
 interface ImportImageResponse {
   img: HTMLImageElement | ImageBitmap;
   imgWidth: number;
@@ -67,15 +69,6 @@ const checkImageCrossOriginAllowed = (
       );
   });
 
-const fileToUrl = (file: File | Blob): string => {
-  const url = window.URL || (window as any).webkitURL;
-  try {
-    return url.createObjectURL(file);
-  } catch (e) {
-    return '';
-  }
-};
-
 const importImage = (image: string | File): Promise<ImportImageResponse> =>
   new Promise((resolve, reject) => {
     if (typeof image === 'string') {
@@ -121,4 +114,4 @@ const importImage = (image: string | File): Promise<ImportImageResponse> =>
     }
   });
 
-export { fileToUrl, importImage };
+export { importImage };

@@ -1,9 +1,11 @@
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { canvasToBlob } from './helpers/saveCanvasHelpers';
-import { fileToUrl, importImage } from './helpers/importImageHelpers';
+import { importImage } from './helpers/importImageHelpers';
 import { extractOffSetFromEvent } from './helpers/eventHelpers';
-import { composeFn, revokeUrl } from './util';
+import { getCanvasDimensionsScaledForImage } from './helpers/canvasHelpers';
+import { fileToUrl, revokeUrl } from './helpers/objectUrlHelpers';
+import { composeFn } from './helpers/miscHelpers';
 
 export type LineJoinType = 'round' | 'bevel' | 'miter';
 export type LineCapType = 'round' | 'butt' | 'square';
@@ -112,9 +114,8 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     imgHeight?: number
   ) => {
     if (imgWidth && imgHeight) {
-      const [cvWidth, cvHeight, scalingRatio] = this.getDrawImageCanvasSize(
+      const [cvWidth, cvHeight, scalingRatio] = getCanvasDimensionsScaledForImage(
         width,
-        height,
         imgWidth,
         imgHeight
       );
@@ -139,19 +140,6 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     this.ctx.lineWidth = lineWidth * this.scalingFactor;
     this.ctx.lineJoin = lineJoin;
     this.ctx.lineCap = lineCap;
-  };
-
-  getDrawImageCanvasSize = (
-    cWidth: number,
-    cHeight: number,
-    imageWidth: number,
-    imageHeight: number
-  ) => {
-    if (imageWidth <= cWidth) {
-      return [imageWidth, imageHeight, 1];
-    }
-    const scalingRatio = cWidth / imageWidth;
-    return [cWidth, scalingRatio * imageHeight, scalingRatio];
   };
 
   handleMouseDown = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
