@@ -6,6 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "lint": "tslint src/**/*.{ts,tsx}",
+    "prettify": "prettier --write .",
     "build": "tsc --p tsconfig.json",
     "prebuild": "rimraf dist",
     "prepublish": "npm run build",
@@ -64,7 +65,7 @@
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.7.0",
     "jest": "^22.4.3",
-    "prettier": "^1.11.1",
+    "prettier": "^1.19.1",
     "prop-types": "^15.6.1",
     "react": "16.3.2",
     "react-dom": "16.3.3",

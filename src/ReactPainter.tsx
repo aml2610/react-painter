@@ -1,16 +1,8 @@
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { canvasToBlob, composeFn, fileToUrl, importImage, revokeUrl } from './util';
-
-// disable touchAction, else the draw on canvas would not work
-// because window would scroll instead of draw on it
-const setUpForCanvas = () => {
-  document.body.style.touchAction = 'none';
-};
-
-const cleanUpCanvas = () => {
-  document.body.style.touchAction = null;
-};
+import { canvasToBlob } from './helpers/saveCanvasHelpers';
+import { fileToUrl, importImage } from './helpers/importImageHelpers';
+import { composeFn, revokeUrl } from './util';
 
 export type LineJoinType = 'round' | 'bevel' | 'miter';
 export type LineCapType = 'round' | 'butt' | 'square';
@@ -86,9 +78,7 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   static defaultProps: Partial<ReactPainterProps> = {
     height: 300,
     image: undefined,
-    onSave() {
-      // noop
-    },
+    onSave: () => {},
     initialColor: '#000',
     initialLineCap: 'round',
     initialLineJoin: 'round',
@@ -190,7 +180,6 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     const { offsetX, offsetY } = this.extractOffSetFromEvent(e);
     this.lastX = offsetX;
     this.lastY = offsetY;
-
     this.setState({
       isDrawing: true
     });
@@ -291,7 +280,8 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
 
   componentDidMount() {
     const { width, height, image } = this.props;
-    setUpForCanvas();
+    // Disable touch action as we handle it separately
+    document.body.style.touchAction = 'none';
     if (image) {
       importImage(image)
         .then(({ img, imgWidth, imgHeight }) => {
@@ -313,7 +303,8 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   }
 
   componentWillUnmount() {
-    cleanUpCanvas();
+    // Enable touch action again
+    document.body.style.touchAction = null;
     revokeUrl(this.state.imageDownloadUrl);
   }
 
