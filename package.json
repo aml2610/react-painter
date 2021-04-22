@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "lint": "tslint src/**/*.{ts,tsx}",
-    "prettify": "prettier --write .",
+    "prettify": "prettier --write src/**/*.{ts,tsx}",
     "build": "tsc --p tsconfig.json",
     "prebuild": "rimraf dist",
     "prepublish": "npm run build",

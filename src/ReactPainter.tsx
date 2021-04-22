@@ -2,6 +2,7 @@ import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { canvasToBlob } from './helpers/saveCanvasHelpers';
 import { fileToUrl, importImage } from './helpers/importImageHelpers';
+import { extractOffSetFromEvent } from './helpers/eventHelpers';
 import { composeFn, revokeUrl } from './util';
 
 export type LineJoinType = 'round' | 'bevel' | 'miter';
@@ -104,29 +105,6 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     lineWidth: this.props.initialLineWidth
   };
 
-  extractOffSetFromEvent = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
-    const { offsetX, offsetY, touches, clientX: mouseClientX, clientY: mouseClientY } = e.nativeEvent as any;
-    // If offset coords are directly on the event we use them
-    if (offsetX && offsetY) {
-      return {
-        offsetX: offsetX * this.scalingFactor,
-        offsetY: offsetY * this.scalingFactor
-      };
-    }
-    // Otherwise we need to calculate them themselves
-    // We need to check whether user is using a touch device or just the mouse and extract
-    // the touch/click coords accordingly
-    const clientX = touches && touches.length ? touches[0].clientX : mouseClientX;
-    const clientY = touches && touches.length ? touches[0].clientY : mouseClientY;
-    const rect = this.canvasRef.getBoundingClientRect();
-    const x = (clientX - rect.left) * this.scalingFactor;
-    const y = (clientY - rect.top) * this.scalingFactor;
-    return {
-      offsetX: x,
-      offsetY: y
-    };
-  };
-
   initializeCanvas = (
     width: number,
     height: number,
@@ -177,7 +155,11 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   };
 
   handleMouseDown = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
-    const { offsetX, offsetY } = this.extractOffSetFromEvent(e);
+    const { offsetX, offsetY } = extractOffSetFromEvent(
+      e,
+      this.scalingFactor,
+      this.canvasRef
+    );
     this.lastX = offsetX;
     this.lastY = offsetY;
     this.setState({
@@ -188,7 +170,11 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   handleMouseMove = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
     const { color, lineWidth, lineCap, lineJoin } = this.state;
     if (this.state.isDrawing) {
-      const { offsetX, offsetY } = this.extractOffSetFromEvent(e);
+      const { offsetX, offsetY } = extractOffSetFromEvent(
+        e,
+        this.scalingFactor,
+        this.canvasRef
+      );
       const ctx = this.ctx;
       ctx.strokeStyle = color;
       ctx.lineWidth = lineWidth * this.scalingFactor;
