@@ -107,41 +107,6 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     lineWidth: this.props.initialLineWidth
   };
 
-  initializeCanvas = (
-    width: number,
-    height: number,
-    imgWidth?: number,
-    imgHeight?: number
-  ) => {
-    if (imgWidth && imgHeight) {
-      const [cvWidth, cvHeight, scalingRatio] = getCanvasDimensionsScaledForImage(
-        width,
-        imgWidth,
-        imgHeight
-      );
-      this.canvasRef.width = imgWidth;
-      this.canvasRef.height = imgHeight;
-      this.setState({
-        canvasHeight: cvHeight,
-        canvasWidth: cvWidth
-      });
-      this.scalingFactor = 1 / scalingRatio;
-    } else {
-      this.canvasRef.width = width;
-      this.canvasRef.height = height;
-      this.setState({
-        canvasHeight: height,
-        canvasWidth: width
-      });
-    }
-    const { color, lineWidth, lineJoin, lineCap } = this.state;
-    this.ctx = this.canvasRef.getContext('2d');
-    this.ctx.strokeStyle = color;
-    this.ctx.lineWidth = lineWidth * this.scalingFactor;
-    this.ctx.lineJoin = lineJoin;
-    this.ctx.lineCap = lineCap;
-  };
-
   handleMouseDown = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
     const { offsetX, offsetY } = extractOffSetFromEvent(
       e,
@@ -179,7 +144,7 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     }
   };
 
-  handleMouseUp = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
+  handleMouseUp = () => {
     this.setState({
       isDrawing: false
     });
@@ -221,6 +186,78 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     });
   };
 
+  initCanvasContext = () => {
+    const { color, lineWidth, lineJoin, lineCap } = this.state;
+    this.ctx = this.canvasRef.getContext('2d');
+    this.ctx.strokeStyle = color;
+    this.ctx.lineWidth = lineWidth * this.scalingFactor;
+    this.ctx.lineJoin = lineJoin;
+    this.ctx.lineCap = lineCap;
+  };
+
+  initCanvasNoImage = (
+    width: number,
+    height: number
+  ) => {
+    this.canvasRef.width = width;
+    this.canvasRef.height = height;
+    this.setState({
+      canvasHeight: height,
+      canvasWidth: width
+    });
+    this.initCanvasContext();
+  };
+
+  initCanvasWithImage = (
+    width: number,
+    imgWidth: number,
+    imgHeight: number 
+  ) => {
+    const [cvWidth, cvHeight, scalingRatio] = getCanvasDimensionsScaledForImage(
+      width,
+      imgWidth,
+      imgHeight
+    );
+    this.canvasRef.width = imgWidth;
+    this.canvasRef.height = imgHeight;
+    this.setState({
+      canvasHeight: cvHeight,
+      canvasWidth: cvWidth
+    });
+    this.scalingFactor = 1 / scalingRatio;
+    this.initCanvasContext();
+  };
+
+  componentDidMount() {
+    const { width, height, image } = this.props;
+    // Disable touch action as we handle it separately
+    document.body.style.touchAction = 'none';
+    if (image) {
+      importImage(image)
+        .then(({ img, imgWidth, imgHeight }) => {
+          this.initCanvasWithImage(width, imgWidth, imgHeight);
+          this.ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+          this.setState({
+            imageCanDownload: true
+          });
+        })
+        .catch(() => {
+          this.setState({
+            imageCanDownload: false
+          });
+          this.initCanvasNoImage(width, height);
+        });
+    } else {
+      this.initCanvasNoImage(width, height);
+    }
+  }
+
+  componentWillUnmount() {
+    // Enable touch action again
+    document.body.style.touchAction = null;
+    revokeUrl(this.state.imageDownloadUrl);
+  }
+
   getCanvasProps = (props: PropsGetterInput = {}): PropsGetterResult => {
     const {
       onMouseDown,
@@ -251,36 +288,6 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
       ...restProps
     };
   };
-
-  componentDidMount() {
-    const { width, height, image } = this.props;
-    // Disable touch action as we handle it separately
-    document.body.style.touchAction = 'none';
-    if (image) {
-      importImage(image)
-        .then(({ img, imgWidth, imgHeight }) => {
-          this.initializeCanvas(width, height, imgWidth, imgHeight);
-          this.ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
-          this.setState({
-            imageCanDownload: true
-          });
-        })
-        .catch(err => {
-          this.setState({
-            imageCanDownload: false
-          });
-          this.initializeCanvas(width, height);
-        });
-    } else {
-      this.initializeCanvas(width, height);
-    }
-  }
-
-  componentWillUnmount() {
-    // Enable touch action again
-    document.body.style.touchAction = null;
-    revokeUrl(this.state.imageDownloadUrl);
-  }
 
   render() {
     const { render } = this.props;
