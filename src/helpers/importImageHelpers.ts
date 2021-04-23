@@ -42,7 +42,9 @@ const checkImageCrossOriginAllowed = (
 }> =>
   new Promise(resolve => {
     Promise.all(
-      // have to map, else Promise.all would fail if any request fail
+      // First try without credentials, then with credentials
+      // (at the end report which one of the two works - it can be both)
+      // Have to map, else Promise.all would fail if any request fail
       [makeAjaxHeadRequest(imageUrl), makeAjaxHeadRequest(imageUrl, true)].map(promise =>
         promise
           .then(result => ({
@@ -69,49 +71,63 @@ const checkImageCrossOriginAllowed = (
       );
   });
 
-const importImage = (image: string | File): Promise<ImportImageResponse> =>
+const importImageFromUrl = (url: string): Promise<ImportImageResponse> => {
+  const img = new Image();
+  return new Promise((resolve, reject) => {
+    img.onload = () => {
+      resolve({
+        img,
+        imgWidth: img.naturalWidth,
+        imgHeight: img.naturalHeight
+      });
+    };
+    checkImageCrossOriginAllowed(url).then(({ anonymous, withCredentials }) => {
+      if (anonymous || withCredentials) {
+        img.crossOrigin = anonymous ? 'anonymous' : 'use-credentials';
+        img.src = url;
+      } else {
+        reject();
+      }
+    });
+  });
+};
+
+const importImageFromBitmapSrc = (bitmapSrc: File): Promise<ImportImageResponse> =>
   new Promise((resolve, reject) => {
-    if (typeof image === 'string') {
-      const img = new Image();
-      img.onload = () => {
+    window
+      .createImageBitmap(bitmapSrc)
+      .then(img =>
         resolve({
           img,
-          imgWidth: img.naturalWidth,
-          imgHeight: img.naturalHeight
-        });
-      };
-      checkImageCrossOriginAllowed(image).then(({ anonymous, withCredentials }) => {
-        if (anonymous || withCredentials) {
-          img.crossOrigin = anonymous ? 'anonymous' : 'use-credentials';
-          img.src = image;
-        } else {
-          reject();
-        }
-      });
-    } else {
-      if ('createImageBitmap' in window) {
-        window
-          .createImageBitmap(image)
-          .then(img =>
-            resolve({
-              img,
-              imgWidth: img.width,
-              imgHeight: img.height
-            })
-          )
-          .catch(err => reject(err));
-      } else {
-        const img = new Image();
-        img.onload = () => {
-          resolve({
-            img,
-            imgWidth: img.naturalWidth,
-            imgHeight: img.naturalHeight
-          });
-        };
-        img.src = fileToUrl(image);
-      }
-    }
+          imgWidth: img.width,
+          imgHeight: img.height
+        })
+      )
+      .catch(err => reject(err));
   });
+
+const importImageFromFile = (file: File): Promise<ImportImageResponse> => {
+  const img = new Image();
+  return new Promise(resolve => {
+    img.onload = () => {
+      resolve({
+        img,
+        imgWidth: img.naturalWidth,
+        imgHeight: img.naturalHeight
+      });
+    };
+    img.src = fileToUrl(file);
+  });
+};
+
+const importImage = (image: string | File): Promise<ImportImageResponse> => {
+  if (typeof image === 'string') {
+    return importImageFromUrl(image);
+  } else if ('createImageBitMap' in window) {
+    return importImageFromBitmapSrc(image);
+  } else {
+    return importImageFromFile(image);
+  }
+};
 
 export { importImage };

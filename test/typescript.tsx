@@ -19,7 +19,6 @@ test('render empty and save', async () => {
       )}
     />
   );
-
   library.Simulate.click(getByText('Save Canvas'));
   await library.wait();
   expect(saveHandler).toBeCalled();

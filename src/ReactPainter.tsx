@@ -81,7 +81,7 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   static defaultProps: Partial<ReactPainterProps> = {
     height: 300,
     image: undefined,
-    onSave: () => {},
+    onSave: () => undefined,
     initialColor: '#000',
     initialLineCap: 'round',
     initialLineJoin: 'round',
@@ -195,10 +195,7 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     this.ctx.lineCap = lineCap;
   };
 
-  initCanvasNoImage = (
-    width: number,
-    height: number
-  ) => {
+  initCanvasNoImage = (width: number, height: number) => {
     this.canvasRef.width = width;
     this.canvasRef.height = height;
     this.setState({
@@ -208,11 +205,7 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     this.initCanvasContext();
   };
 
-  initCanvasWithImage = (
-    width: number,
-    imgWidth: number,
-    imgHeight: number 
-  ) => {
+  initCanvasWithImage = (width: number, imgWidth: number, imgHeight: number) => {
     const [cvWidth, cvHeight, scalingRatio] = getCanvasDimensionsScaledForImage(
       width,
       imgWidth,

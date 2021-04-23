@@ -7,6 +7,8 @@
     "trailing-comma": false,
     "semicolon": [true, "always", "ignore-bound-class-methods"],
     "arrow-parens": [true, "ban-single-arg-parens"],
-    "no-console": [true, "log"]
+    "no-console": [true, "log"],
+    "ordered-imports": false,
+    "object-literal-sort-keys": false
   }
 }

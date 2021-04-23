@@ -94,14 +94,12 @@ stories.add('with image', () => (
     width={number('width', 300)}
     height={number('height', 300)}
     onSave={action('canvas saved!')}
-    image={text('image url', 'https://picsum.photos/200/300')}
+    image={text('image url', 'https://aml2610.github.io/avatar.jpeg')}
     render={({
       triggerSave,
       getCanvasProps,
       imageCanDownload,
-      imageDownloadUrl,
-      setColor,
-      setLineWidth
+      imageDownloadUrl
     }) => (
       <div style={styles.root}>
         <div>

@@ -17,7 +17,7 @@ const extractOffSetFromEvent = (
       offsetY: offsetY * scalingFactor
     };
   }
-  // Otherwise we need to calculate them
+  // Otherwise we need to calculate them as difference between (x, y) of event and (left, top) corner of canvas
   // We need to check whether user is using a touch device or just the mouse and extract
   // the touch/click coords accordingly
   const clientX = touches && touches.length ? touches[0].clientX : mouseClientX;
