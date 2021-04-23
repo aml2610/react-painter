@@ -11,7 +11,7 @@
 
 ## The problem
 
-You want a simple functionality to allow the user to write/draw on image/blank canvas, then save the output to be uploaded to a server/locally.
+You want simple functionality to allow the user to write/draw on image/blank canvas, then save the output to be uploaded to a server/locally.
 
 ## The solution
 
@@ -112,7 +112,7 @@ This is called with an object. Read more about the properties of the object in t
 ## Render Prop Function
 
 This is where you want to render the canvas and the function to trigger save. It is a regular prop called `render`: `<ReactPainter render={/* here */} />`
-The properties of the object passed to this function is listed below.
+The properties of the object passed to this function are listed below.
 
 ### canvas: ReactNode
 
@@ -275,7 +275,7 @@ Example:
 
 ### getCanvasProps: (any) => CanvasProps;
 
-Prop getter for advanced use case. If you wish to extends the functionality of ReactPainter by adding additional properties to the canvas/ getting the `ref` of the canvas, then call this function with those properties and spread the result of this function to the canvas.
+Prop getter for advanced use case. If you wish to extend the functionality of ReactPainter by adding additional properties to the canvas/getting the `ref` of the canvas, then call this function with those properties and spread the result of this function to the canvas.
 
 > Note: Only callback ref is supported. The new `React.createRef` is not supported.
 

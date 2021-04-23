@@ -1,16 +1,11 @@
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { canvasToBlob, composeFn, fileToUrl, importImage, revokeUrl } from './util';
-
-// disable touchAction, else the draw on canvas would not work
-// because window would scroll instead of draw on it
-const setUpForCanvas = () => {
-  document.body.style.touchAction = 'none';
-};
-
-const cleanUpCanvas = () => {
-  document.body.style.touchAction = null;
-};
+import { canvasToBlob } from './helpers/saveCanvasHelpers';
+import { importImage } from './helpers/importImageHelpers';
+import { extractOffSetFromEvent } from './helpers/eventHelpers';
+import { getCanvasDimensionsScaledForImage } from './helpers/canvasHelpers';
+import { fileToUrl, revokeUrl } from './helpers/objectUrlHelpers';
+import { composeFn } from './helpers/miscHelpers';
 
 export type LineJoinType = 'round' | 'bevel' | 'miter';
 export type LineCapType = 'round' | 'butt' | 'square';
@@ -86,9 +81,7 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   static defaultProps: Partial<ReactPainterProps> = {
     height: 300,
     image: undefined,
-    onSave() {
-      // noop
-    },
+    onSave: () => undefined,
     initialColor: '#000',
     initialLineCap: 'round',
     initialLineJoin: 'round',
@@ -114,83 +107,14 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     lineWidth: this.props.initialLineWidth
   };
 
-  extractOffSetFromEvent = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
-    const { offsetX, offsetY, touches, clientX: mouseClientX, clientY: mouseClientY } = e.nativeEvent as any;
-    // If offset coords are directly on the event we use them
-    if (offsetX && offsetY) {
-      return {
-        offsetX: offsetX * this.scalingFactor,
-        offsetY: offsetY * this.scalingFactor
-      };
-    }
-    // Otherwise we need to calculate them themselves
-    // We need to check whether user is using a touch device or just the mouse and extract
-    // the touch/click coords accordingly
-    const clientX = touches && touches.length ? touches[0].clientX : mouseClientX;
-    const clientY = touches && touches.length ? touches[0].clientY : mouseClientY;
-    const rect = this.canvasRef.getBoundingClientRect();
-    const x = (clientX - rect.left) * this.scalingFactor;
-    const y = (clientY - rect.top) * this.scalingFactor;
-    return {
-      offsetX: x,
-      offsetY: y
-    };
-  };
-
-  initializeCanvas = (
-    width: number,
-    height: number,
-    imgWidth?: number,
-    imgHeight?: number
-  ) => {
-    if (imgWidth && imgHeight) {
-      const [cvWidth, cvHeight, scalingRatio] = this.getDrawImageCanvasSize(
-        width,
-        height,
-        imgWidth,
-        imgHeight
-      );
-      this.canvasRef.width = imgWidth;
-      this.canvasRef.height = imgHeight;
-      this.setState({
-        canvasHeight: cvHeight,
-        canvasWidth: cvWidth
-      });
-      this.scalingFactor = 1 / scalingRatio;
-    } else {
-      this.canvasRef.width = width;
-      this.canvasRef.height = height;
-      this.setState({
-        canvasHeight: height,
-        canvasWidth: width
-      });
-    }
-    const { color, lineWidth, lineJoin, lineCap } = this.state;
-    this.ctx = this.canvasRef.getContext('2d');
-    this.ctx.strokeStyle = color;
-    this.ctx.lineWidth = lineWidth * this.scalingFactor;
-    this.ctx.lineJoin = lineJoin;
-    this.ctx.lineCap = lineCap;
-  };
-
-  getDrawImageCanvasSize = (
-    cWidth: number,
-    cHeight: number,
-    imageWidth: number,
-    imageHeight: number
-  ) => {
-    if (imageWidth <= cWidth) {
-      return [imageWidth, imageHeight, 1];
-    }
-    const scalingRatio = cWidth / imageWidth;
-    return [cWidth, scalingRatio * imageHeight, scalingRatio];
-  };
-
   handleMouseDown = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
-    const { offsetX, offsetY } = this.extractOffSetFromEvent(e);
+    const { offsetX, offsetY } = extractOffSetFromEvent(
+      e,
+      this.scalingFactor,
+      this.canvasRef
+    );
     this.lastX = offsetX;
     this.lastY = offsetY;
-
     this.setState({
       isDrawing: true
     });
@@ -199,7 +123,11 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   handleMouseMove = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
     const { color, lineWidth, lineCap, lineJoin } = this.state;
     if (this.state.isDrawing) {
-      const { offsetX, offsetY } = this.extractOffSetFromEvent(e);
+      const { offsetX, offsetY } = extractOffSetFromEvent(
+        e,
+        this.scalingFactor,
+        this.canvasRef
+      );
       const ctx = this.ctx;
       ctx.strokeStyle = color;
       ctx.lineWidth = lineWidth * this.scalingFactor;
@@ -216,7 +144,7 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     }
   };
 
-  handleMouseUp = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
+  handleMouseUp = () => {
     this.setState({
       isDrawing: false
     });
@@ -258,6 +186,71 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     });
   };
 
+  initCanvasContext = () => {
+    const { color, lineWidth, lineJoin, lineCap } = this.state;
+    this.ctx = this.canvasRef.getContext('2d');
+    this.ctx.strokeStyle = color;
+    this.ctx.lineWidth = lineWidth * this.scalingFactor;
+    this.ctx.lineJoin = lineJoin;
+    this.ctx.lineCap = lineCap;
+  };
+
+  initCanvasNoImage = (width: number, height: number) => {
+    this.canvasRef.width = width;
+    this.canvasRef.height = height;
+    this.setState({
+      canvasHeight: height,
+      canvasWidth: width
+    });
+    this.initCanvasContext();
+  };
+
+  initCanvasWithImage = (width: number, imgWidth: number, imgHeight: number) => {
+    const [cvWidth, cvHeight, scalingRatio] = getCanvasDimensionsScaledForImage(
+      width,
+      imgWidth,
+      imgHeight
+    );
+    this.canvasRef.width = imgWidth;
+    this.canvasRef.height = imgHeight;
+    this.setState({
+      canvasHeight: cvHeight,
+      canvasWidth: cvWidth
+    });
+    this.scalingFactor = 1 / scalingRatio;
+    this.initCanvasContext();
+  };
+
+  componentDidMount() {
+    const { width, height, image } = this.props;
+    // Disable touch action as we handle it separately
+    document.body.style.touchAction = 'none';
+    if (image) {
+      importImage(image)
+        .then(({ img, imgWidth, imgHeight }) => {
+          this.initCanvasWithImage(width, imgWidth, imgHeight);
+          this.ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+          this.setState({
+            imageCanDownload: true
+          });
+        })
+        .catch(() => {
+          this.setState({
+            imageCanDownload: false
+          });
+          this.initCanvasNoImage(width, height);
+        });
+    } else {
+      this.initCanvasNoImage(width, height);
+    }
+  }
+
+  componentWillUnmount() {
+    // Enable touch action again
+    document.body.style.touchAction = null;
+    revokeUrl(this.state.imageDownloadUrl);
+  }
+
   getCanvasProps = (props: PropsGetterInput = {}): PropsGetterResult => {
     const {
       onMouseDown,
@@ -288,34 +281,6 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
       ...restProps
     };
   };
-
-  componentDidMount() {
-    const { width, height, image } = this.props;
-    setUpForCanvas();
-    if (image) {
-      importImage(image)
-        .then(({ img, imgWidth, imgHeight }) => {
-          this.initializeCanvas(width, height, imgWidth, imgHeight);
-          this.ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
-          this.setState({
-            imageCanDownload: true
-          });
-        })
-        .catch(err => {
-          this.setState({
-            imageCanDownload: false
-          });
-          this.initializeCanvas(width, height);
-        });
-    } else {
-      this.initializeCanvas(width, height);
-    }
-  }
-
-  componentWillUnmount() {
-    cleanUpCanvas();
-    revokeUrl(this.state.imageDownloadUrl);
-  }
 
   render() {
     const { render } = this.props;
