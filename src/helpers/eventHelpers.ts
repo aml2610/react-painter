@@ -1,5 +1,7 @@
+import { SyntheticEvent } from 'react';
+
 const extractOffSetFromEvent = (
-  e: React.SyntheticEvent<HTMLCanvasElement>,
+  e: SyntheticEvent<HTMLCanvasElement>,
   scalingFactor: number,
   canvasRef: HTMLCanvasElement
 ) => {
