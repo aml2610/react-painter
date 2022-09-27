@@ -252,7 +252,7 @@ Example:
 
 ### imageDownloadUrl: string;
 
-This properties is the URL can you can use to allow user to download the saved image after invoke `triggerSave`. By default it is `null` until the `triggerSave` is invoked.
+This properties is the URL you can use to allow user to download the saved image after invoke `triggerSave`. By default it is `null` until the `triggerSave` is invoked.
 
 Example:
 
