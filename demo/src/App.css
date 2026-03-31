@@ -100,8 +100,8 @@ body {
   transition: all 0.15s;
 }
 
-.mode-buttons button:hover {
-  border-color: #999;
+.mode-buttons button:hover:not(.active) {
+  background: #f0f0f0;
 }
 
 .mode-buttons button.active {
