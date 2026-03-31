@@ -1,5 +1,5 @@
-import * as PropTypes from 'prop-types';
-import * as React from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { canvasToBlob } from './helpers/saveCanvasHelpers';
 import { importImage } from './helpers/importImageHelpers';
 import { extractOffSetFromEvent } from './helpers/eventHelpers';
@@ -33,8 +33,8 @@ export interface RenderProps {
   canvas: JSX.Element;
   triggerSave: () => void;
   getCanvasProps: (props: PropsGetterInput) => PropsGetterResult;
-  imageCanDownload: boolean;
-  imageDownloadUrl: string;
+  imageCanDownload: boolean | null;
+  imageDownloadUrl: string | null;
   setColor: (color: string) => void;
   setLineWidth: (width: number) => void;
   setLineJoin: (type: LineJoinType) => void;
@@ -56,8 +56,8 @@ export interface ReactPainterProps {
 export interface PainterState {
   canvasHeight: number;
   canvasWidth: number;
-  imageCanDownload: boolean;
-  imageDownloadUrl: string;
+  imageCanDownload: boolean | null;
+  imageDownloadUrl: string | null;
   isDrawing: boolean;
   color: string;
   lineWidth: number;
@@ -89,8 +89,8 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
     width: 300
   };
 
-  canvasRef: HTMLCanvasElement = null;
-  ctx: CanvasRenderingContext2D = null;
+  canvasRef: HTMLCanvasElement | null = null;
+  ctx: CanvasRenderingContext2D | null = null;
   lastX = 0;
   lastY = 0;
   scalingFactor = 1;
@@ -98,16 +98,17 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   state: PainterState = {
     canvasHeight: 0,
     canvasWidth: 0,
-    color: this.props.initialColor,
+    color: this.props.initialColor ?? '#000',
     imageCanDownload: null,
     imageDownloadUrl: null,
     isDrawing: false,
-    lineCap: this.props.initialLineCap,
-    lineJoin: this.props.initialLineJoin,
-    lineWidth: this.props.initialLineWidth
+    lineCap: this.props.initialLineCap ?? 'round',
+    lineJoin: this.props.initialLineJoin ?? 'round',
+    lineWidth: this.props.initialLineWidth ?? 5
   };
 
   handleMouseDown = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
+    if (!this.canvasRef) return;
     const { offsetX, offsetY } = extractOffSetFromEvent(
       e,
       this.scalingFactor,
@@ -122,7 +123,7 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
 
   handleMouseMove = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
     const { color, lineWidth, lineCap, lineJoin } = this.state;
-    if (this.state.isDrawing) {
+    if (this.state.isDrawing && this.ctx && this.canvasRef) {
       const { offsetX, offsetY } = extractOffSetFromEvent(
         e,
         this.scalingFactor,
@@ -152,9 +153,10 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
 
   handleSave = () => {
     const { onSave } = this.props;
+    if (!this.canvasRef) return;
     canvasToBlob(this.canvasRef, 'image/png')
       .then((blob: Blob) => {
-        onSave(blob);
+        onSave?.(blob);
         this.setState({
           imageDownloadUrl: fileToUrl(blob)
         });
@@ -187,8 +189,10 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   };
 
   initCanvasContext = () => {
+    if (!this.canvasRef) return;
     const { color, lineWidth, lineJoin, lineCap } = this.state;
     this.ctx = this.canvasRef.getContext('2d');
+    if (!this.ctx) return;
     this.ctx.strokeStyle = color;
     this.ctx.lineWidth = lineWidth * this.scalingFactor;
     this.ctx.lineJoin = lineJoin;
@@ -196,6 +200,7 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   };
 
   initCanvasNoImage = (width: number, height: number) => {
+    if (!this.canvasRef) return;
     this.canvasRef.width = width;
     this.canvasRef.height = height;
     this.setState({
@@ -206,6 +211,7 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   };
 
   initCanvasWithImage = (width: number, imgWidth: number, imgHeight: number) => {
+    if (!this.canvasRef) return;
     const [cvWidth, cvHeight, scalingRatio] = getCanvasDimensionsScaledForImage(
       width,
       imgWidth,
@@ -222,14 +228,14 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
   };
 
   componentDidMount() {
-    const { width, height, image } = this.props;
+    const { width = 300, height = 300, image } = this.props;
     // Disable touch action as we handle it separately
     document.body.style.touchAction = 'none';
     if (image) {
       importImage(image)
         .then(({ img, imgWidth, imgHeight }) => {
           this.initCanvasWithImage(width, imgWidth, imgHeight);
-          this.ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+          this.ctx?.drawImage(img, 0, 0, imgWidth, imgHeight);
           this.setState({
             imageCanDownload: true
           });
@@ -247,8 +253,10 @@ export class ReactPainter extends React.Component<ReactPainterProps, PainterStat
 
   componentWillUnmount() {
     // Enable touch action again
-    document.body.style.touchAction = null;
-    revokeUrl(this.state.imageDownloadUrl);
+    document.body.style.touchAction = '';
+    if (this.state.imageDownloadUrl) {
+      revokeUrl(this.state.imageDownloadUrl);
+    }
   }
 
   getCanvasProps = (props: PropsGetterInput = {}): PropsGetterResult => {
