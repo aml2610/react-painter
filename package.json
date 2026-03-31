@@ -25,9 +25,8 @@
     "build": "tsup",
     "prepublishOnly": "npm run build",
     "test": "jest",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
-    "deploy-storybook": "storybook-to-ghpages"
+    "demo": "cd demo && npm run dev",
+    "demo:build": "cd demo && npm run build"
   },
   "repository": {
     "type": "git",
@@ -52,12 +51,6 @@
     "react": ">=0.14.x"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^7.6.3",
-    "@storybook/addon-knobs": "^7.0.2",
-    "@storybook/addon-links": "^7.6.3",
-    "@storybook/addons": "^3.4.0",
-    "@storybook/react": "^7.0.6",
-    "@storybook/storybook-deployer": "^2.3.0",
     "@types/jest": "^22.2.2",
     "@types/prop-types": "^15.5.2",
     "@types/react": "^18.2.0",

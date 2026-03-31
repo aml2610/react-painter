@@ -3,7 +3,7 @@
 [![version](https://img.shields.io/npm/v/react-painter.svg)](https://www.npmjs.com/package/react-painter)
 ![license](https://img.shields.io/npm/l/react-painter.svg)
 
-[DEMO](https://aml2610.github.io/react-painter/)
+[DEMO](https://aml2610.github.io/react-painter/) | Run locally: `cd demo && npm install && npm run dev`
 
 <p align="center" style="font-size:1.2rem">0 dependency React component that can be used to draw on a canvas with mouse/touch</p>
 
