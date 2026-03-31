@@ -4,10 +4,15 @@
     "sourceMap": true,
     "declaration": true,
     "noImplicitAny": true,
-    "module": "commonjs",
-    "target": "es5",
-    "jsx": "react",
-    "lib": ["dom", "es2015"]
+    "strict": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2018",
+    "jsx": "react-jsx",
+    "lib": ["DOM", "ES2018"],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*"]
 }
