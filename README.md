@@ -49,6 +49,33 @@ const Drawable = () => (
 );
 ```
 
+## Hooks API
+
+For new code, the `usePainter` hook is the recommended way to use react-painter. It provides the same functionality as the render prop API but integrates more naturally with function components.
+
+```jsx
+import { usePainter } from 'react-painter';
+
+const Drawable = () => {
+  const { canvas, triggerSave } = usePainter({
+    width: 300,
+    height: 300,
+    onSave: blob => console.log(blob),
+  });
+
+  return (
+    <div>
+      <button onClick={triggerSave}>Save Canvas</button>
+      <div>{canvas}</div>
+    </div>
+  );
+};
+```
+
+The hook accepts the same options as the `ReactPainter` component props (excluding `render`) and returns all the same values available in the render prop function, plus `getCanvasProps` for advanced use cases.
+
+> Note: The render prop API via `ReactPainter` still works and is fully supported. The hooks API is recommended for new code.
+
 ## Props
 
 ### height?: number
