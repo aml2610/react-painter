@@ -1,6 +1,6 @@
 {
   "name": "react-painter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A React component for drawing in a canvas",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -18,7 +18,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "lint": "eslint 'src/**/*.{ts,tsx}'",
