@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { canvasToBlob } from './helpers/saveCanvasHelpers';
 import { importImage } from './helpers/importImageHelpers';
@@ -66,17 +65,6 @@ export interface PainterState {
 }
 
 export class ReactPainter extends React.Component<ReactPainterProps, PainterState> {
-  static propTypes = {
-    color: PropTypes.string,
-    height: PropTypes.number,
-    image: PropTypes.oneOfType([PropTypes.instanceOf(File), PropTypes.string]),
-    lineCap: PropTypes.string,
-    lineJoin: PropTypes.string,
-    lineWidth: PropTypes.number,
-    onSave: PropTypes.func,
-    render: PropTypes.func,
-    width: PropTypes.number
-  };
 
   static defaultProps: Partial<ReactPainterProps> = {
     height: 300,

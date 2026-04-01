@@ -27,7 +27,7 @@ should be installed as one of your project's `dependencies`:
 npm install --save react-painter
 ```
 
-> This package also depends on `react` and `prop-types`. Make sure they are installed in your project.
+> This package also depends on `react`. Make sure it is installed in your project.
 
 ## Usage
 
