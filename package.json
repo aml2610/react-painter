@@ -24,7 +24,9 @@
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "build": "tsup",
     "prepublishOnly": "npm run build",
-    "test": "jest",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "demo": "cd demo && npm run dev",
     "demo:build": "cd demo && npm run build"
   },
@@ -51,50 +53,28 @@
     "react": ">=0.14.x"
   },
   "devDependencies": {
-    "@types/jest": "^22.2.2",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
     "@types/prop-types": "^15.5.2",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
-    "canvas-prebuilt": "1.6.11",
+    "@vitest/coverage-v8": "^1.6.1",
     "core-js": "^2.5.4",
     "eslint": "^8.57.0",
-    "jest": "^29.6.1",
+    "jest-canvas-mock": "^2.5.0",
+    "jsdom": "^24.0.0",
     "prettier": "^1.19.1",
     "prop-types": "^15.6.1",
-    "react": "16.14.0",
-    "react-dom": "16.14.0",
-    "react-testing-library": "^2.1.0",
-    "ts-jest": "^29.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "tsup": "^8.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
   },
-  "dependencies": {},
   "prettier": {
     "singleQuote": true,
     "printWidth": 90
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testURL": "http://localhost",
-    "testRegex": "test/.*.(tsx?|jsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.tsx",
-      "src/**/*.ts"
-    ],
-    "coverageReporters": [
-      "text-summary"
-    ]
   }
 }
