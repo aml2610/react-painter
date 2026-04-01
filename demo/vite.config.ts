@@ -8,8 +8,6 @@ export default defineConfig({
   resolve: {
     alias: {
       'react-painter': path.resolve(__dirname, '../src'),
-      // Ensure prop-types resolves from demo/node_modules when imported by ../src
-      'prop-types': path.resolve(__dirname, 'node_modules/prop-types'),
     },
   },
 });

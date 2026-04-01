@@ -49,13 +49,11 @@
   },
   "homepage": "https://github.com/aml2610/react-painter#readme",
   "peerDependencies": {
-    "prop-types": ">=15",
-    "react": ">=0.14.x"
+    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
-    "@types/prop-types": "^15.5.2",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
@@ -66,7 +64,6 @@
     "jest-canvas-mock": "^2.5.0",
     "jsdom": "^24.0.0",
     "prettier": "^1.19.1",
-    "prop-types": "^15.6.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tsup": "^8.0.0",
