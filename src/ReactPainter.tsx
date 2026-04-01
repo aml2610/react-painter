@@ -1,10 +1,5 @@
 import React from 'react';
-import { canvasToBlob } from './helpers/saveCanvasHelpers';
-import { importImage } from './helpers/importImageHelpers';
-import { extractOffSetFromEvent } from './helpers/eventHelpers';
-import { getCanvasDimensionsScaledForImage } from './helpers/canvasHelpers';
-import { fileToUrl, revokeUrl } from './helpers/objectUrlHelpers';
-import { composeFn } from './helpers/miscHelpers';
+import { usePainter } from './usePainter';
 
 export type LineJoinType = 'round' | 'bevel' | 'miter';
 export type LineCapType = 'round' | 'butt' | 'square';
@@ -64,236 +59,35 @@ export interface PainterState {
   lineCap: LineCapType;
 }
 
-export class ReactPainter extends React.Component<ReactPainterProps, PainterState> {
+export const ReactPainter: React.FC<ReactPainterProps> = ({
+  render,
+  ...painterProps
+}) => {
+  const {
+    canvas,
+    triggerSave,
+    getCanvasProps,
+    imageCanDownload,
+    imageDownloadUrl,
+    setColor,
+    setLineWidth,
+    setLineJoin,
+    setLineCap,
+  } = usePainter(painterProps);
 
-  static defaultProps: Partial<ReactPainterProps> = {
-    height: 300,
-    image: undefined,
-    onSave: () => undefined,
-    initialColor: '#000',
-    initialLineCap: 'round',
-    initialLineJoin: 'round',
-    initialLineWidth: 5,
-    width: 300
-  };
-
-  canvasRef: HTMLCanvasElement | null = null;
-  ctx: CanvasRenderingContext2D | null = null;
-  lastX = 0;
-  lastY = 0;
-  scalingFactor = 1;
-
-  state: PainterState = {
-    canvasHeight: 0,
-    canvasWidth: 0,
-    color: this.props.initialColor ?? '#000',
-    imageCanDownload: null,
-    imageDownloadUrl: null,
-    isDrawing: false,
-    lineCap: this.props.initialLineCap ?? 'round',
-    lineJoin: this.props.initialLineJoin ?? 'round',
-    lineWidth: this.props.initialLineWidth ?? 5
-  };
-
-  handleMouseDown = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
-    if (!this.canvasRef) return;
-    const { offsetX, offsetY } = extractOffSetFromEvent(
-      e,
-      this.scalingFactor,
-      this.canvasRef
-    );
-    this.lastX = offsetX;
-    this.lastY = offsetY;
-    this.setState({
-      isDrawing: true
+  if (typeof render === 'function') {
+    return render({
+      canvas,
+      getCanvasProps,
+      imageCanDownload,
+      imageDownloadUrl,
+      setColor,
+      setLineCap,
+      setLineJoin,
+      setLineWidth,
+      triggerSave,
     });
-  };
-
-  handleMouseMove = (e: React.SyntheticEvent<HTMLCanvasElement>) => {
-    const { color, lineWidth, lineCap, lineJoin } = this.state;
-    if (this.state.isDrawing && this.ctx && this.canvasRef) {
-      const { offsetX, offsetY } = extractOffSetFromEvent(
-        e,
-        this.scalingFactor,
-        this.canvasRef
-      );
-      const ctx = this.ctx;
-      ctx.strokeStyle = color;
-      ctx.lineWidth = lineWidth * this.scalingFactor;
-      ctx.lineCap = lineCap;
-      ctx.lineJoin = lineJoin;
-      const lastX = this.lastX;
-      const lastY = this.lastY;
-      ctx.beginPath();
-      ctx.moveTo(lastX, lastY);
-      ctx.lineTo(offsetX, offsetY);
-      ctx.stroke();
-      this.lastX = offsetX;
-      this.lastY = offsetY;
-    }
-  };
-
-  handleMouseUp = () => {
-    this.setState({
-      isDrawing: false
-    });
-  };
-
-  handleSave = () => {
-    const { onSave } = this.props;
-    if (!this.canvasRef) return;
-    canvasToBlob(this.canvasRef, 'image/png')
-      .then((blob: Blob) => {
-        onSave?.(blob);
-        this.setState({
-          imageDownloadUrl: fileToUrl(blob)
-        });
-      })
-      .catch(err => console.error('in ReactPainter handleSave', err));
-  };
-
-  handleSetColor = (color: string) => {
-    this.setState({
-      color
-    });
-  };
-
-  handleSetLineWidth = (lineWidth: number) => {
-    this.setState({
-      lineWidth
-    });
-  };
-
-  handleSetLineJoin = (type: 'round' | 'bevel' | 'miter') => {
-    this.setState({
-      lineJoin: type
-    });
-  };
-
-  handleSetLineCap = (type: 'round' | 'butt' | 'square') => {
-    this.setState({
-      lineCap: type
-    });
-  };
-
-  initCanvasContext = () => {
-    if (!this.canvasRef) return;
-    const { color, lineWidth, lineJoin, lineCap } = this.state;
-    this.ctx = this.canvasRef.getContext('2d');
-    if (!this.ctx) return;
-    this.ctx.strokeStyle = color;
-    this.ctx.lineWidth = lineWidth * this.scalingFactor;
-    this.ctx.lineJoin = lineJoin;
-    this.ctx.lineCap = lineCap;
-  };
-
-  initCanvasNoImage = (width: number, height: number) => {
-    if (!this.canvasRef) return;
-    this.canvasRef.width = width;
-    this.canvasRef.height = height;
-    this.setState({
-      canvasHeight: height,
-      canvasWidth: width
-    });
-    this.initCanvasContext();
-  };
-
-  initCanvasWithImage = (width: number, imgWidth: number, imgHeight: number) => {
-    if (!this.canvasRef) return;
-    const [cvWidth, cvHeight, scalingRatio] = getCanvasDimensionsScaledForImage(
-      width,
-      imgWidth,
-      imgHeight
-    );
-    this.canvasRef.width = imgWidth;
-    this.canvasRef.height = imgHeight;
-    this.setState({
-      canvasHeight: cvHeight,
-      canvasWidth: cvWidth
-    });
-    this.scalingFactor = 1 / scalingRatio;
-    this.initCanvasContext();
-  };
-
-  componentDidMount() {
-    const { width = 300, height = 300, image } = this.props;
-    // Disable touch action as we handle it separately
-    document.body.style.touchAction = 'none';
-    if (image) {
-      importImage(image)
-        .then(({ img, imgWidth, imgHeight }) => {
-          this.initCanvasWithImage(width, imgWidth, imgHeight);
-          this.ctx?.drawImage(img, 0, 0, imgWidth, imgHeight);
-          this.setState({
-            imageCanDownload: true
-          });
-        })
-        .catch(() => {
-          this.setState({
-            imageCanDownload: false
-          });
-          this.initCanvasNoImage(width, height);
-        });
-    } else {
-      this.initCanvasNoImage(width, height);
-    }
   }
 
-  componentWillUnmount() {
-    // Enable touch action again
-    document.body.style.touchAction = '';
-    if (this.state.imageDownloadUrl) {
-      revokeUrl(this.state.imageDownloadUrl);
-    }
-  }
-
-  getCanvasProps = (props: PropsGetterInput = {}): PropsGetterResult => {
-    const {
-      onMouseDown,
-      onTouchStart,
-      onMouseMove,
-      onTouchMove,
-      onMouseUp,
-      onTouchEnd,
-      style,
-      ref,
-      ...restProps
-    } = props;
-    return {
-      onMouseDown: composeFn(onMouseDown, this.handleMouseDown),
-      onMouseMove: composeFn(onMouseMove, this.handleMouseMove),
-      onMouseUp: composeFn(onMouseUp, this.handleMouseUp),
-      onTouchEnd: composeFn(onTouchEnd, this.handleMouseUp),
-      onTouchMove: composeFn(onTouchMove, this.handleMouseMove),
-      onTouchStart: composeFn(onTouchStart, this.handleMouseDown),
-      ref: composeFn(ref, (canvasRef: HTMLCanvasElement) => {
-        this.canvasRef = canvasRef;
-      }),
-      style: {
-        height: this.state.canvasHeight,
-        width: this.state.canvasWidth,
-        ...style
-      },
-      ...restProps
-    };
-  };
-
-  render() {
-    const { render } = this.props;
-    const { imageCanDownload, imageDownloadUrl } = this.state;
-    const canvasNode = <canvas {...this.getCanvasProps()} />;
-    return typeof render === 'function'
-      ? render({
-          canvas: canvasNode,
-          getCanvasProps: this.getCanvasProps,
-          imageCanDownload,
-          imageDownloadUrl,
-          setColor: this.handleSetColor,
-          setLineCap: this.handleSetLineCap,
-          setLineJoin: this.handleSetLineJoin,
-          setLineWidth: this.handleSetLineWidth,
-          triggerSave: this.handleSave
-        })
-      : canvasNode;
-  }
-}
+  return canvas;
+};
